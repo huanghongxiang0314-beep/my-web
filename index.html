@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KD 部门月度综合管理看板 - 2026年9月</title>
+
+<!-- 不蒜子PV/UV点击量统计脚本 -->
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  /* 咨询报告风细滚动条 */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: #F8FAFC; }
+  ::-webkit-scrollbar-thumb { background: #CBD5E1; }
+
+  :root {
+    --navy: #0F172A;
+    --navy-light: #1E293B;
+    --blue: #2251FF;
+    --cyan: #0E7490;
+    --ink: #0F172A;
+    --muted: #475569;
+    --border: #CBD5E1;
+    --bg-soft: #F8FAFC;
+    --card-bg: #FFFFFF;
+    
+    --green: #15803D;
+    --warn: #B45309;
+    --bad: #B91C1C;
+    
+    --rd: #1E293B;
+    --line: #475569;
+    --parts: #64748B;
+    --teal: #0F172A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* 固定滚动条槽位：切换时高度变化不再导致内容左右挤动 */
+  html { scrollbar-gutter: stable; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background-color: #FFFFFF;
+    color: var(--ink);
+    font-size: 12px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /* 顶部品牌栏（参考样式：深海蓝） */
+  .nav-header {
+    background: var(--navy);
+    color: #FFF;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(203,213,225,0.25);
+  }
+  .nav-header-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 12px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand-logo {
+    width: 48px; height: 34px;
+    background: var(--navy-light);
+    border: 1px solid rgba(203,213,225,0.35);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 12px; letter-spacing: 0.06em; color: #F8FAFC;
+    flex-shrink: 0;
+  }
+  .brand-title { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: #F8FAFC; line-height: 1.3; }
+  .brand-sub { font-size: 11px; color: #94A3B8; letter-spacing: 0.03em; margin-top: 2px; }
+  .nav-header-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; font-size: 11.5px; color: #CBD5E1; }
+  .nav-header-meta .meta-row { font-variant-numeric: tabular-nums; }
+  .nav-header-meta .pv-uv-box { display: flex; gap: 12px; align-items: center; }
+  .nav-header-meta .pv-uv-box span { background: var(--navy-light); border: 1px solid rgba(203,213,225,0.3); padding: 1px 7px; font-weight: 600; color: #E2E8F0; font-variant-numeric: tabular-nums; }
+
+  /* 顶级选项卡导航 (参考样式：浅灰底 + 2px 下边框高亮) */
+  .main-nav {
+    background: #F8FAFC;
+    padding: 0 40px;
+    display: flex;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-item {
+    padding: 12px 22px;
+    color: #64748B;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    user-select: none;
+    letter-spacing: 0.04em;
+  }
+  .nav-item:hover { color: var(--navy); }
+  .nav-item.active {
+    color: var(--navy);
+    border-bottom-color: var(--navy);
+  }
+
+  /* 主容器页面布局 */
+  .page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: var(--card-bg);
+    padding: 36px 48px 56px;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    min-height: 100vh;
+  }
+
+  /* Tab 页面切换（两阶段过渡 + 区块错落 + 行级飞入） */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: tabIn 0.28s ease both; }
+  .tab-content.leaving { animation: tabOut 0.14s ease both; display: block; }
+  @keyframes tabIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes tabOut {
+    from { opacity: 1; transform: none; }
+    to { opacity: 0; transform: translateY(-6px); }
+  }
+  /* 新页内部区块依次浮现（标题→控制栏→KPI→图表卡片） */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+  .tab-content.active .section-title { animation: fadeUp 0.38s ease both; }
+  .tab-content.active .controls-bar { animation: fadeUp 0.38s ease 0.07s both; }
+  .tab-content.active .summary-grid { animation: fadeUp 0.38s ease 0.14s both; }
+  .tab-content.active .card { animation: fadeUp 0.42s ease 0.2s both; }
+  /* 表格数据行逐行淡入（仅透明度，不位移，避免条形图视觉位移） */
+  @keyframes rowFly {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .tab-content.active .score-row,
+  .tab-content.active .gantt-row { animation: rowFly 0.32s ease both; }
+
+  /* 第一页切换交叉淡入（工厂/节点/差额筛选共用） */
+  #scoreSummary, #tab-score .card { transition: opacity 0.16s ease; }
+  #scoreSummary.score-fading, #tab-score .card.score-fading { opacity: 0; }
+
+  /* 柱状图波浪生长：宽度从0生长到各自目标值，行间错峰延迟由内联animation-delay控制 */
+  @keyframes barGrow {
+    from { width: 0; }
+    to { width: var(--bar-w, 100%); }
+  }
+  .score-bar { width: var(--bar-w, 0); animation-name: barGrow; animation-duration: 0.6s; animation-timing-function: cubic-bezier(.22,.61,.36,1); animation-fill-mode: both; }
+  .score-segm { overflow: hidden; white-space: nowrap; }
+  /* 搜索过滤时禁用行与柱的动画，保持即时刷新不闪烁 */
+  #scoreRows.no-anim .score-row,
+  #scoreRows.no-anim .score-bar { animation: none !important; }
+
+  /* 差额排序开关 */
+  .sort-btn {
+    border: 1px solid var(--border); background: #FFF; color: var(--muted);
+    font-size: 11px; font-weight: 600; padding: 5px 12px; cursor: pointer;
+    transition: all 0.15s; font-variant-numeric: tabular-nums;
+  }
+  .sort-btn:hover { background: var(--bg-soft); }
+  .sort-btn.active { background: var(--navy); color: #FFF; border-color: var(--navy); }
+
+  /* 节点对比模式 */
+  .cmp { font-size: 10px; font-weight: 600; font-variant-numeric: tabular-nums; margin-left: 4px; }
+  .cmp.up { color: #15803D; }
+  .cmp.down { color: #B91C1C; }
+  .cmp.flat { color: #94A3B8; }
+
+  /* 第二页风险汇总条 */
+  .risk-banner {
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid #F2C4C4; background: #FDF8F8;
+    padding: 8px 14px; margin-bottom: 14px;
+    font-size: 11.5px; color: #9C2F2F;
+  }
+  .risk-banner b { font-weight: 700; }
+  .risk-banner .risk-list { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .risk-tag {
+    border: 1px solid #EEBEBE; background: #FFF; color: #9C2F2F;
+    padding: 2px 9px; font-size: 10.5px; font-weight: 700; cursor: pointer;
+    transition: all 0.15s; font-variant-numeric: tabular-nums;
+  }
+  .risk-tag:hover { background: #FBEAEA; }
+
+  /* Section 通用样式 */
+  .section-block { margin-bottom: 32px; }
+  .section-title {
+    font-size: 13px;
+    color: var(--navy);
+    font-weight: 700;
+    border-left: 3px solid var(--navy);
+    padding-left: 10px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    letter-spacing: 0.05em;
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 24px;
+  }
+
+  /* 过滤控制栏 & 搜索框 */
+  .controls-bar {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    background: transparent;
+    padding: 0 0 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .filter-group { display: flex; align-items: center; gap: 8px; }
+  .filter-label { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 0.02em; }
+  .seg-btn-group { display: flex; border: 1px solid var(--border); background: #FFF; }
+  .seg-btn-group button {
+    padding: 6px 16px; border: 0; border-right: 1px solid var(--border);
+    background: #FFF; color: var(--muted); font-size: 11.5px; font-weight: 500; cursor: pointer; transition: all 0.15s;
+  }
+  .seg-btn-group button:last-child { border-right: 0; }
+  .seg-btn-group button:hover { background: var(--bg-soft); }
+  .seg-btn-group button.active { background: var(--navy); color: #FFF; }
+
+  /* 搜索框组件 */
+  .search-input {
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    font-size: 11.5px;
+    outline: none;
+    width: 200px;
+    background: #FFF;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    transition: border-color 0.2s;
+  }
+  .search-input::placeholder { color: #94A3B8; }
+  .search-input:focus { border-color: var(--navy); }
+
+  /* KPI 指标卡 */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-bottom: 28px;
+    border: 1px solid var(--border);
+    border-bottom: 0;
+  }
+  .metric-card {
+    background: #FFF;
+    padding: 18px 20px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .metric-card:last-child { border-right: 0; }
+  .metric-card .k { font-size: 10.5px; color: var(--muted); font-weight: 600; letter-spacing: 0.03em; }
+  .metric-card .v { font-size: 20px; font-weight: 700; color: var(--navy); margin-top: 6px; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+  .metric-card .s { font-size: 10.5px; color: #64748B; margin-top: 6px; font-variant-numeric: tabular-nums; }
+
+  /* 状态标识 */
+  .status-tag {
+    display: inline-block; padding: 3px 10px; border: 1px solid var(--border); font-size: 10px; font-weight: 600; text-align: center; white-space: nowrap; letter-spacing: 0.02em;
+  }
+  .status-tag.完成 { background: #F0FDF4; border-color: #BBE5C9; color: #166534; }
+  .status-tag.进行中 { background: #F0F7FE; border-color: #C7DDF2; color: #1E5A8A; }
+  .status-tag.风险 { background: #FDF2F2; border-color: #F2C4C4; color: #9C2F2F; }
+  .status-tag.未开始 { background: #F8FAFC; border-color: var(--border); color: #64748B; }
+
+  /* 图表容器与轴线线轨 */
+  .chart-container { border: 1px solid var(--border); background: #FFF; overflow-x: auto; }
+  .chart-inner { min-width: 1020px; }
+  
+  /* 积分柱状图样式（第一页参照，等宽数字+细分割线） */
+  .axis-score { display: grid; grid-template-columns: 130px 270px 1fr 100px; height: 34px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--muted); background: #EEF2F6; }
+  .axis-score > div { display: flex; align-items: center; }
+  .scale-score { position: relative; height: 100%; margin-right: 12px; }
+  .scale-score .tick { position: absolute; bottom: 10px; transform: translateX(-50%); font-variant-numeric: tabular-nums; }
+  .score-row { display: grid; grid-template-columns: 130px 270px 1fr 100px; min-height: 48px; align-items: center; }
+  .score-row:nth-child(even) { background: #F8FAFC; }
+  .score-row:hover { background: #F0F4F8; }
+  .score-row.miss { background: #FEF5F4; box-shadow: inset 3px 0 0 var(--bad); }
+  .score-row.miss:hover { background: #FCEAE8; }
+  .score-plot { position: relative; height: 20px; margin-right: 60px; background-image: linear-gradient(to right, rgba(15,23,42,0.06) 1px, transparent 1px); background-size: 20% 100%; }
+  .score-targetline { position: absolute; top: -4px; bottom: -4px; width: 1.5px; background: var(--navy); z-index: 5; }
+  .score-bar { position: absolute; left: 0; top: 0; height: 20px; display: flex; }
+  .score-segm { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 9.5px; font-weight: 600; color: #FFF; font-variant-numeric: tabular-nums; }
+  .score-segm.rd { background: var(--rd); }
+  .score-segm.line { background: var(--line); }
+  .score-segm.parts { background: var(--parts); }
+
+  /* 原版 KD 项目里程碑甘特图样式（优化间距防止文字与节点重叠） */
+  .axis-gantt { display: grid; grid-template-columns: 150px 96px 1fr 72px; height: 44px; border-bottom: 1px solid var(--border); font-size: 10px; color: var(--muted); background: #EEF2F6; }
+  .axis-gantt > div { display: flex; align-items: flex-end; }
+  .scale-gantt { position: relative; height: 100%; margin: 0 32px 0 20px; } /* 右侧加大间距防止 OKTB 重叠 */
+  .scale-gantt .tick { position: absolute; bottom: 8px; transform: translateX(-50%); text-align: center; line-height: 1.15; z-index: 5; white-space: nowrap; }
+  .scale-gantt .tick b { display: block; font-size: 10px; color: var(--navy); font-weight: 600; }
+  .scale-gantt .tick span { display: block; font-size: 9px; color: #8A918E; margin-top: 1px; font-variant-numeric: tabular-nums; }
+
+  .gantt-row { display: grid; grid-template-columns: 150px 96px 1fr 72px; min-height: 50px; align-items: center; }
+  .gantt-row:nth-child(even) { background: #F8FAFC; }
+  .gantt-row:hover { background: #F0F4F8; }
+  .gantt-plot { position: relative; height: 48px; margin: 0 32px 0 20px; background-image: linear-gradient(to right, rgba(15,23,42,0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(15,23,42,0.03) 1px, transparent 1px); background-size: 10% 100%, 100% 100%; }
+  
+  .milestone-line { position: absolute; top: 10px; bottom: 10px; width: 1px; border-left: 1px dashed rgba(15,23,42,0.3); z-index: 1; pointer-events: none; }
+  .gantt-track { position: absolute; left: 0; right: 0; top: 14px; height: 20px; background: var(--bg-soft); }
+  .gantt-bar { position: absolute; left: 0; top: 14px; height: 20px; background: var(--teal); z-index: 2; }
+  .gantt-dot { display: none; }
+  .gantt-val { position: absolute; top: 14px; transform: none; font-size: 9.5px; font-weight: 600; color: var(--navy); white-space: nowrap; z-index: 5; background: #FFF; padding: 0 2px; }
+
+  /* 厂区分组头 */
+  .factory-head { height: 34px; display: flex; align-items: center; padding: 0 14px; background: #E2E8F0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 600; color: var(--navy); letter-spacing: 0.08em; }
+  .factory-head::before { content: ""; width: 3px; height: 12px; background: var(--navy); display: inline-block; margin-right: 8px; }
+
+  /* 政策卡片及高亮数字 */
+  .policy-card { background: #FFF; border: 1px solid var(--border); border-left: 3px solid var(--navy); padding: 16px 20px; margin-bottom: 12px; }
+  .policy-card.sub { border-left-color: var(--cyan); }
+  .policy-title { font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .policy-text { font-size: 11.5px; color: var(--ink); white-space: pre-wrap; line-height: 1.7; }
+  
+  /* 数字高亮样式 */
+  .num-hl { color: var(--blue); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .num-warn { color: var(--bad); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .num-good { color: var(--green); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* 第五板块布局 */
+  .matrix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-top: 16px; border: 1px solid var(--border); }
+  .matrix-card { padding: 20px 22px; border-bottom: 1px solid var(--border); background: #FFF; }
+  .matrix-card:nth-child(even) { border-left: 1px solid var(--border); }
+  .matrix-card.high-high { background: #FDF8F8; }
+  .matrix-card.high-mid { background: #FDFBF3; }
+  .matrix-card .matrix-tag {
+    font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 10px; display: inline-block; margin-bottom: 10px;
+    border: 1px solid var(--border); color: var(--navy);
+  }
+  .high-high .matrix-tag { background: #FBEAEA; border-color: #EFC3C3; color: #932626; }
+  .high-mid .matrix-tag { background: #F8F1DC; border-color: #E5D5A6; color: #7A5B12; }
+
+  .bullet-list { list-style: none; font-size: 11.5px; padding: 0; margin: 0; }
+  .bullet-list li { margin-bottom: 12px; padding-left: 18px; position: relative; line-height: 1.7; }
+  .bullet-list.good li::before { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: bold; }
+  .bullet-list.next li::before { content: "➔"; position: absolute; left: 0; color: var(--cyan); font-weight: bold; }
+
+  /* 图例 */
+  .legend-bar { display: flex; gap: 24px; align-items: center; padding: 0 0 10px; margin-bottom: 0; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--muted); background: #FFF; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .dot-box { width: 10px; height: 10px; display: inline-block; }
+
+  /* ===== 第二页/第三页: 与第一页统一的方正柱状图（独立配色） ===== */
+  #tab-project .gantt-track { background: #EBF7F1; }
+  #tab-special .gantt-track { background: #E9F4F6; }
+  #tab-project .gantt-bar { background: #28b873; }
+  #tab-special .gantt-bar { background: #008397; }
+
+  /* 里程碑竖线随各页主色调（低饱和淡线） */
+  #tab-project .milestone-line { border-left-color: rgba(40, 184, 115, 0.4); }
+  #tab-special .milestone-line { border-left-color: rgba(0, 131, 151, 0.4); }
+
+  /* 进度数值: 与第一页一致，宽柱白字居中；窄柱放柱右侧 */
+  .gantt-val { position: absolute; transform: none; background: transparent; padding: 0; }
+  .gantt-val.in-bar { left: 0; top: 0; width: 100%; height: 20px; line-height: 20px; text-align: center; color: #FFF; font-weight: 600; white-space: nowrap; font-size: 9.5px; font-variant-numeric: tabular-nums; }
+  .gantt-val.out-bar { top: 14px; height: 20px; line-height: 20px; background: #FFF; border: 1px solid var(--border); color: var(--navy); padding: 0 4px; font-size: 9px; font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 900px) {
+    .main-nav { padding: 0 10px; flex-wrap: wrap; }
+    .page-container { padding: 16px; }
+    .summary-grid, .matrix-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 顶部品牌栏 + 标签导航（参考样式） -->
+<header class="nav-header">
+  <div class="nav-header-inner">
+    <div class="brand">
+      <div class="brand-logo">DFT</div>
+      <div>
+        <div class="brand-title">KD推进-月度经营报告</div>
+        <div class="brand-sub">KD Department Operations Management Dashboard</div>
+      </div>
+    </div>
+    <div class="nav-header-meta">
+      <div class="meta-row">数据更新时间：2026年9月 ｜ 归口部门：KD推进科</div>
+      <div class="pv-uv-box">
+        PV点击量: <span id="busuanzi_value_page_pv">--</span> | UV访客数: <span id="busuanzi_value_site_uv">--</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="main-nav">
+  <div class="nav-item active" onclick="switchTab('tab-score')">一、积分进展</div>
+  <div class="nav-item" onclick="switchTab('tab-project')">二、项目进展</div>
+  <div class="nav-item" onclick="switchTab('tab-special')">三、专项进展</div>
+  <div class="nav-item" onclick="switchTab('tab-policy')">四、政策速递</div>
+  <div class="nav-item" onclick="switchTab('tab-exec')">五、待决策/亮点/下月重点</div>
+</nav>
+
+<div class="page-container">
+
+  <!-- ==================== Tab 1: 积分进展 ==================== -->
+  <div id="tab-score" class="tab-content active">
+    <section class="section-block">
+      <div class="section-title">
+        <span>一、各车型积分规划与目标缺口分析</span>
+        <span style="font-size:11px; font-weight:700; color:var(--navy);">年度目标线：ICE 2,567 分 | NEV 1,500 分</span>
+      </div>
+
+      <div class="controls-bar">
+        <div class="filter-group">
+          <span class="filter-label">工厂:</span>
+          <div class="seg-btn-group" id="scoreFactoryGroup">
+            <button class="active" onclick="setScoreFactory('AGK')">AGK</button>
+            <button onclick="setScoreFactory('AGM')">AGM</button>
+            <button onclick="setScoreFactory('AGS')">AGS</button>
+            <button onclick="setScoreFactory('AGN')">AGN</button>
+          </div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">时间节点:</span>
+          <div class="seg-btn-group" id="scoreNodeGroup"></div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">目标差额:</span>
+          <div class="seg-btn-group" id="scoreGapGroup">
+            <button class="active" onclick="setGapFilter('all')">全部</button>
+            <button onclick="setGapFilter('miss')">仅未达标</button>
+            <button onclick="setGapFilter('big')">缺口≥100</button>
+          </div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">排序:</span>
+          <button class="sort-btn" id="scoreSortBtn" onclick="toggleScoreSort()">差额排序 ↓</button>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">节点对比:</span>
+          <button class="sort-btn" id="cmpToggleBtn" onclick="toggleCompare()">对比上一节点</button>
+        </div>
+        <div class="filter-group" style="margin-left:auto;">
+          <span class="filter-label">搜索过滤:</span>
+          <input type="text" id="scoreSearchInput" class="search-input" placeholder="搜索车型/代码/配置..." oninput="renderScore(false)">
+        </div>
+      </div>
+
+      <div class="summary-grid" id="scoreSummary"></div>
+
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div class="legend-bar">
+          <span class="legend-item"><i class="dot-box" style="background:var(--rd);"></i>研发积分</span>
+          <span class="legend-item"><i class="dot-box" style="background:var(--line);"></i>产线积分</span>
+          <span class="legend-item"><i class="dot-box" style="background:var(--parts);"></i>零部件积分</span>
+          <span class="legend-item"><i class="dot-box" style="width:2px; height:12px; background:var(--navy);"></i>目标线 (ICE 2567 / NEV 1500)</span>
+        </div>
+        <div class="chart-container">
+          <div class="chart-inner">
+            <div class="axis-score">
+              <div style="padding:8px 12px; font-weight:700;">车型/类目</div>
+              <div style="padding:8px 12px; font-weight:700;">配置详情</div>
+              <div class="scale-score" id="scoreScale"></div>
+              <div style="padding:8px 8px; font-weight:700;">目标差额</div>
+            </div>
+            <div id="scoreRows"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ==================== Tab 2: 项目进展 ==================== -->
+  <div id="tab-project" class="tab-content">
+    <section class="section-block">
+      <div class="section-title">
+        <span>二、项目节点推进进度</span>
+      </div>
+
+      <div class="controls-bar">
+        <div class="filter-group">
+          <span class="filter-label">工厂:</span>
+          <div class="seg-btn-group" id="projFactoryGroup">
+            <button class="active" onclick="setProjFactory('ALL')">全部</button>
+            <button onclick="setProjFactory('AGK')">AGK</button>
+            <button onclick="setProjFactory('AGM')">AGM</button>
+            <button onclick="setProjFactory('AGS')">AGS</button>
+            <button onclick="setProjFactory('AGN')">AGN</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="risk-banner" id="projRiskBanner" style="display:none;"></div>
+
+      <div class="summary-grid" id="projSummary"></div>
+
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div class="legend-bar">
+          <span class="legend-item"><i class="dot-box" style="background:#28b873; width:16px;"></i>当前推进进度</span>
+          <span class="legend-item"><i class="dot-box" style="width:1px; height:12px; border-left:1px dashed rgba(40,184,115,0.6);"></i>关键里程碑关口 (KDP0-OKTB)</span>
+        </div>
+        <div class="chart-container">
+          <div class="chart-inner">
+            <div class="axis-gantt">
+              <div style="padding:10px 12px; font-weight:700; align-self:flex-end;">车型</div>
+              <div style="padding:10px 8px; font-weight:700; align-self:flex-end;">SOP</div>
+              <div class="scale-gantt" id="projScale"></div>
+              <div style="padding:10px 8px; font-weight:700; align-self:flex-end;">状态</div>
+            </div>
+            <div id="projRows"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ==================== Tab 3: 专项进展 ==================== -->
+  <div id="tab-special" class="tab-content">
+    <section class="section-block">
+      <div class="section-title">
+        <span>三、核心专项推进节点与进度</span>
+      </div>
+
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div class="legend-bar">
+          <span class="legend-item"><i class="dot-box" style="background:#008397; width:16px;"></i>节点完成权重进度</span>
+          <span class="legend-item"><i class="dot-box" style="width:1px; height:12px; border-left:1px dashed rgba(0,131,151,0.6);"></i>里程碑关口</span>
+        </div>
+        <div class="chart-container">
+          <div class="chart-inner">
+            <div class="axis-gantt">
+              <div style="padding:10px 12px; font-weight:700; align-self:flex-end;">专项名称</div>
+              <div style="padding:10px 8px; font-weight:700; align-self:flex-end;">目标周期</div>
+              <div class="scale-gantt" id="specialScale"></div>
+              <div style="padding:10px 8px; font-weight:700; align-self:flex-end;">状态</div>
+            </div>
+            <div id="specialGanttRows"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ==================== Tab 4: 政策速递 ==================== -->
+  <div id="tab-policy" class="tab-content">
+    <section class="section-block">
+      <div class="section-title">
+        <span>四、政策速递</span>
+      </div>
+
+      <div class="card">
+        <div style="font-size:12.5px; font-weight:800; color:var(--navy); margin-bottom:14px; border-bottom:2px solid var(--navy); padding-bottom:6px;">
+          最新政策变化点与详细条款解析
+        </div>
+
+        <div class="policy-card">
+          <div class="policy-title">1. 研发积分政策变化 [9月9日最新消息]</div>
+          <div class="policy-text">（1）自 <span class="num-hl">2026年</span> 起，轻型乘用车研发积分上限为 <span class="num-good">1500分</span>。
+（2）自 <span class="num-hl">2027年</span> 起，研发投入不超过 <span class="num-warn">7亿卢布</span> 时，研发积分上限按公式计算（最高 <span class="num-hl">1000分</span>）；研发投入超过 <span class="num-warn">7亿卢布</span> 时，上限为 <span class="num-good">1500分</span>。
+原草案中“研发积分≤零部件积分+产线积分”的要求被暂时删除，该项要求或将推迟至 <span class="num-hl">2027年7月1日</span> 起实施。
+
+<strong>影响：</strong>若政策能尽快发布（<span class="num-hl">11月之前</span>），AGS/AGM有机会将今年已获取研发积分提升至 <span class="num-good">1120 / 1160分</span>。</div>
+        </div>
+
+        <div class="policy-card">
+          <div class="policy-title">2. 信贷补贴新增本地化积分要求 [电动车/紫线车辆]</div>
+          <div class="policy-text">• 积分 <span class="num-hl">≥ 1200分</span>（不含研发积分）：可享车价 <span class="num-good">10%</span> 补贴，最高不超过 <span class="num-good">50万卢布</span>。
+• 积分 <span class="num-hl">≥ 2500分</span>（不含研发积分）：可享车价 <span class="num-good">35%</span> 补贴，最高不超过 <span class="num-good">92.5万卢布</span>。
+
+<strong>影响：</strong>自 <span class="num-warn">2027年1月1日</span> 起，DKD车辆或将无法获取贴息。</div>
+        </div>
+
+        <div class="policy-card">
+          <div class="policy-title">3. 719预修订草案条款</div>
+          <div class="policy-text">① NAMI将719法规内条目划分为三级：<span class="num-good">绿色(一级)</span>、<span class="num-hl">黄色(二级)</span>、<span class="num-warn">红色(三级 - 核心技术)</span>。
+② 第1级、第2级：若符合特定要求可保留当前积分，否则未来将逐步降低直至 <span class="num-warn">归零</span>。
+③ 第3级：若符合特定要求，可增分至 <span class="num-good">1.5倍</span>（自 <span class="num-hl">2027年1月1日</span> 起）。
+
+<strong>影响评估：</strong>政府意在获取涉及知识产权的技术文件；对于第3级（电池、发动机、变速箱等）核心技术，虽提供工艺文件可获 <span class="num-good">1.5倍积分</span>，但代价远大于收益，系技术机密换积分的不对等交易。</div>
+        </div>
+
+        <div class="policy-card">
+          <div class="policy-title">4. 电子电器件大电容法规修订</div>
+          <div class="policy-text">法规草案将“大容量电容”定义为“双电层超级电容，电容量 <span class="num-warn">＞ 1法拉</span>”。经我方专家反馈，汽车行业实际应用几乎不可能超过 <span class="num-hl">1法拉</span>。相关部门已接受意见，正在征集修订。
+
+<strong>影响：</strong>合理修订后，有望为我方带来增分机会。</div>
+        </div>
+
+        <div class="policy-card">
+          <div class="policy-title">5. SPIC 知识产权相关要求</div>
+          <div class="policy-text">根据工贸部文件，考虑在 SPIC 中纳入知识产权相关要求。若接受我方须依法提供技术机密。目前处于意见征集阶段，仍有谈判空间。</div>
+        </div>
+
+        <div style="font-size:12.5px; font-weight:800; color:var(--navy); margin:24px 0 14px 0; border-bottom:2px solid var(--navy); padding-bottom:6px;">
+          行业政策及优惠补贴动态
+        </div>
+
+        <div class="policy-card sub">
+          <div class="policy-title">① 整车积分申请暂停</div>
+          <div class="policy-text">受轴承政策影响，当前整车积分暂无法申请。待 <span class="num-hl">9月1日</span> 针对现行轴承政策的延期生效法令发布后，申请方可恢复。</div>
+        </div>
+
+        <div class="policy-card sub">
+          <div class="policy-title">② OTTC 拓展工作暂缓</div>
+          <div class="policy-text">受轴承政策影响，<span class="num-warn">9月7日至9月30日</span> 期间，OTTC 拓展工作暂缓开展。</div>
+        </div>
+
+        <div class="policy-card sub">
+          <div class="policy-title">③ 优惠汽车贷款与租赁政策缩水</div>
+          <div class="policy-text">【优惠汽车租赁】（<span class="num-hl">2026年6月18日</span>）
+• 电动车定义：纯电动或油电混动（动力电池容量必须 <span class="num-hl">≥ 25 kWh</span>）。
+• 高度本地化电动车（HL EV）：本地化积分 <span class="num-good">≥ 2500分</span>。
+
+支持标准：
+1) ICE/PHEV (电池 <span class="num-warn">＜ 25 kWh</span>)：<span class="num-hl">2026-01-01</span> 起积分 <span class="num-good">≥ 2500分</span>，享 <span class="num-good">10%</span> 首付折扣，最高不超 <span class="num-good">50万卢布</span>。
+2) 电动车 (BEV/REEV/电池 <span class="num-hl">≥ 25 kWh</span>)：享 <span class="num-good">10%</span> 首付折扣，最高不超 <span class="num-good">50万卢布</span>。
+3) 高度本地化电动车 (HL EV)：积分 <span class="num-good">≥ 2500分</span>，享 <span class="num-good">10%</span> 首付折扣，最高不超 <span class="num-good">92.5万卢布</span>。
+
+【优惠汽车贷款】：未来可能统一为车价 <span class="num-good">10%</span> 优惠，但电车最高不超 <span class="num-good">50万卢布</span>。</div>
+        </div>
+
+        <div class="policy-card sub">
+          <div class="policy-title">④ HEV 政策认定口径切换</div>
+          <div class="policy-text">现行框架下 HEV 与 PHEV 适用相同政策；未来紫线政策发布后，HEV 将与 ICE 适用相同政策口径。</div>
+        </div>
+
+        <div class="policy-card sub">
+          <div class="policy-title">⑤ PHEV 补贴调整预警</div>
+          <div class="policy-text">目前政府对 PHEV 的认定要求处于调整中，未来针对 PHEV 车型的优惠补贴或存在进一步降低可能。</div>
+        </div>
+
+        <div class="policy-card sub">
+          <div class="policy-title">⑥ 研发积分政策三种备选方案</div>
+          <div class="policy-text">方案①：积分上限由 <span class="num-hl">1000分</span> 提升至 <span class="num-good">1500分</span>，其他规则不变。
+方案②：上限提升至 <span class="num-good">1500分</span>，但增加“研发积分 ≤ 零部件积分 + 工艺积分”约束。
+方案③：上限维持 <span class="num-hl">1000分</span>，按年度挂钩：<span class="num-hl">2026年</span> 不超 <span class="num-hl">100%</span>、<span class="num-hl">2027年</span> 不超 <span class="num-warn">60%</span>、<span class="num-hl">2028年</span> 不超 <span class="num-warn">40%</span>。工艺积分未来存在取消可能。</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ==================== Tab 5: 待决策 / 亮点 / 下月重点 ==================== -->
+  <div id="tab-exec" class="tab-content">
+    <section class="section-block">
+      <div class="section-title">
+        <span>五、待决策事项、本月亮点与下月重点</span>
+      </div>
+
+      <!-- 待决策权衡矩阵 -->
+      <div class="card" style="margin-bottom:20px;">
+        <div style="font-size:12.5px; font-weight:800; color:var(--navy); margin-bottom:12px; border-bottom:2px solid var(--navy); padding-bottom:6px;">
+          待高管决策事项权衡矩阵 (Impact vs. Urgency)
+        </div>
+        
+        <div class="matrix-grid">
+          <div class="matrix-card high-high">
+            <span class="matrix-tag">紧急且重要 (High Impact / High Urgency)</span>
+            <div style="font-size:12px; font-weight:700; color:#9B1C1C; margin-bottom:6px;">1. 常熟基地改造费用预算决议 — 责任人：王军茂</div>
+            <p style="font-size:11.5px; color:#7F1D1D; margin-bottom:8px;"><strong>排查现状：</strong>工程院未提报 CKD 国内改造费用预算，常熟基地改造所需 <span class="num-warn">870 万</span> 资金尚无预算支撑。</p>
+            <div style="font-size:11px; background:#FFF; padding:10px; border-radius:4px; border:1px solid #FEB2B2;">
+              <strong>决策建议：</strong>需要协调解决该笔费用的出处与预算划转，确保项目按计划节点推进。
+            </div>
+          </div>
+
+          <div class="matrix-card high-mid">
+            <span class="matrix-tag">重要关注 (High Impact / Medium Urgency)</span>
+            <div style="font-size:12px; font-weight:700; color:#744210; margin-bottom:6px;">2. L8-REEV BC 财务分析与立项 — 责任人：查志辉、嵇森森</div>
+            <p style="font-size:11.5px; color:#713F12; margin-bottom:8px;"><strong>阻塞卡点：</strong>BC 财务分析未通过（查志辉）；立项指令未完成下发，需补齐地产化财务分析明细（嵇森森）。</p>
+            <div style="font-size:11px; background:#FFF; padding:10px; border-radius:4px; border:1px solid #F6E05E;">
+              <strong>决策建议：</strong>重新打合财务分析模型，加速补齐明细，确保顺利下发立项指令。
+            </div>
+          </div>
+
+          <div class="matrix-card">
+            <span class="matrix-tag" style="background:var(--navy); color:#FFF;">跨部门协同 (Cross-Functional)</span>
+            <div style="font-size:12px; font-weight:700; color:var(--navy); margin-bottom:6px;">3. 719 法案积分系数影响评估 — 责任人：瞿国峰、王宇敏、曹现康、李境原</div>
+            <p style="font-size:11.5px; color:var(--ink); margin-bottom:6px;">联合采购(瞿国峰)、研发(王宇敏)、本地化(曹现康)与政策团队(李境原)，深度评估法案引入积分系数对成本及成果归零的连锁反应。</p>
+          </div>
+
+          <div class="matrix-card">
+            <span class="matrix-tag" style="background:var(--navy); color:#FFF;">运营规划 (Operations)</span>
+            <div style="font-size:12px; font-weight:700; color:var(--navy); margin-bottom:6px;">4. 2567/3701 积分切换与团队分工 — 责任人：曹现康、王小聪、曹宁章</div>
+            <p style="font-size:11.5px; color:var(--ink); margin-bottom:6px;">明确燃油车动总组合换动节奏（王小聪）；下发 2567/3701 本地化通知（曹现康）；完成团队梯队建设与分工（曹宁章）。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 亮点与重点列对比布局 -->
+      <div class="matrix-grid">
+        <div class="card">
+          <div style="font-size:12.5px; font-weight:800; color:var(--navy); margin-bottom:14px; border-bottom:2px solid var(--navy); padding-bottom:6px;">
+            本月工作亮点 (Highlights)
+          </div>
+
+          <ul class="bullet-list good">
+            <li><strong>关口与节点达成：</strong>完成新研发积分政策发布；确保 T9 大五座 GISP 在 2026-09-30 前公布；所有车型项目均按期实现 SOP。</li>
+            <li><strong>政策与法规突破：</strong>推动大电容法规修订（争取22项电子器件增分）；完成营销中心产业政策培训；上线 SPIC 义务监管看板；完成 2027 年积分测算及 6 项主要政策趋势预判。</li>
+            <li><strong>规划与立项成果：</strong>锁定 49 款车一级计划（ICE-3701分 / NEV-2567分）；完成 AGN 首批地产化件清单签批；完成 AGN 厂区 5 款车型（V27/ETFL/V25/E02/G700）P1 立项指令及一级计划下发（9月21日）与设备定标。</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div style="font-size:12.5px; font-weight:800; color:var(--navy); margin-bottom:14px; border-bottom:2px solid var(--navy); padding-bottom:6px;">
+            下月重点工作 (Next Month Focus)
+          </div>
+
+          <ul class="bullet-list next">
+            <li><strong>积分与动总方案锁定：</strong>打合 3701 计划与 1500 分零部件切换；对齐 MJV 3701/2000 分一级计划；明确动总组合及换动节奏。</li>
+            <li><strong>厂区攻坚推进：</strong>AGN 厂区落实切尔尼土建（10/30前落地）、设备发运（11/30）及 V27 KDBOM 挂网；AGM 厂区确认启动指令及 20 JPH 线方案；AGS 厂区推进 C4 项目及 LRPP 调整。</li>
+            <li><strong>项目与政策跟进：</strong>跟踪 L8-REEV 及 T1ED/L6-REEV 材料准备；推进 FM 变速箱、2.0 发动机、电池及冲压项目；深化 719 法案评估、紫线政策跟进及 SPIC 变更筹备。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</div>
+
+<script>
+/* ==================== 1. 原始数据 (纯净无删减) ==================== */
+const SCORE_DATA = {"rows":[{"factory":"AGK","model":"C5","code":"T19CFL","config":"1.5+6DCT-FWD","date":"2027/01/01","total":2575.0,"rd":429.0,"line":900.0,"parts":1246.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C5","code":"T19CFL","config":"1.5+6DCT-FWD","date":"2027/03/12","total":2767.0,"rd":300.0,"line":900.0,"parts":1567.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C5","code":"T19CFL","config":"1.5+7DCT-AWD","date":"2027/01/01","total":2658.0,"rd":429.0,"line":900.0,"parts":1329.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C5","code":"T19CFL","config":"1.5+7DCT-AWD","date":"2027/03/12","total":2850.0,"rd":300.0,"line":900.0,"parts":1650.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC","config":"1.6+7DCT-AWD","date":"2027/01/01","total":2628.0,"rd":429.0,"line":900.0,"parts":1299.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC","config":"1.6+7DCT-AWD","date":"2027/03/12","total":2570.0,"rd":300.0,"line":900.0,"parts":1370.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC","config":"1.6+7DCT-FWD","date":"2027/01/01","total":2628.0,"rd":429.0,"line":900.0,"parts":1299.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC","config":"1.6+7DCT-FWD","date":"2027/03/12","total":2570.0,"rd":300.0,"line":900.0,"parts":1370.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"L6","code":"T1Q","config":"1.5+6DCT-FWD","date":"2027/01/01","total":2687.0,"rd":429.0,"line":900.0,"parts":1358.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"L6","code":"T1Q","config":"1.5+6DCT-FWD","date":"2027/03/12","total":2636.0,"rd":300.0,"line":900.0,"parts":1436.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"L6","code":"T1Q","config":"1.5+7DCT-AWD","date":"2027/01/01","total":2462.0,"rd":429.0,"line":900.0,"parts":1133.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"L6","code":"T1Q","config":"1.5+7DCT-AWD","date":"2027/03/12","total":2636.0,"rd":300.0,"line":900.0,"parts":1436.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+6DCT-FWD","date":"2027/01/01","total":2580.5,"rd":429.0,"line":900.0,"parts":1251.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+6DCT-FWD","date":"2027/03/12","total":2717.5,"rd":300.0,"line":900.0,"parts":1517.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+7DCT-AWD","date":"2027/01/01","total":2580.5,"rd":429.0,"line":900.0,"parts":1251.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+7DCT-AWD","date":"2027/03/12","total":2727.5,"rd":300.0,"line":900.0,"parts":1527.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+MT-FWD","date":"2027/01/01","total":2580.5,"rd":429.0,"line":900.0,"parts":1251.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+MT-FWD","date":"2027/03/12","total":2717.5,"rd":300.0,"line":900.0,"parts":1517.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-AWD","date":"2027/01/01","total":2599.0,"rd":429.0,"line":900.0,"parts":1270.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-AWD","date":"2027/03/12","total":2849.0,"rd":300.0,"line":900.0,"parts":1649.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-FWD","date":"2027/01/01","total":2729.0,"rd":429.0,"line":900.0,"parts":1400.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-FWD","date":"2027/03/12","total":2969.0,"rd":300.0,"line":900.0,"parts":1769.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"1.6+7DCT-FWD","date":"2027/01/01","total":2901.0,"rd":429.0,"line":900.0,"parts":1572.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"1.6+7DCT-FWD","date":"2027/03/12","total":2976.0,"rd":300.0,"line":900.0,"parts":1776.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"2.0+7DCT-AWD","date":"2027/01/01","total":2506.0,"rd":429.0,"line":900.0,"parts":1177.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"2.0+7DCT-AWD","date":"2027/03/12","total":2751.0,"rd":300.0,"line":900.0,"parts":1551.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-5座","config":"2.0+8AT-AWD","date":"2027/01/01","total":2526.5,"rd":429.0,"line":900.0,"parts":1197.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-7座","config":"2.0+8AT-AWD","date":"2027/01/01","total":2529.0,"rd":429.0,"line":900.0,"parts":1200.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-5座","config":"2.0+8AT-AWD","date":"2027/03/12","total":2433.5,"rd":300.0,"line":900.0,"parts":1233.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-7座","config":"2.0+8AT-AWD","date":"2027/03/12","total":2436.0,"rd":300.0,"line":900.0,"parts":1236.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"1.6+7DCT-FWD","date":"2027/01/01","total":2744.5,"rd":1160.0,"line":900.0,"parts":684.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"1.6+7DCT-FWD","date":"2027/06/09","total":2840.0,"rd":400.0,"line":900.0,"parts":1540.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"1.6+8AT-FWD","date":"2027/06/09","total":2840.0,"rd":400.0,"line":900.0,"parts":1540.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"2.0+8AT-FWD","date":"2027/01/01","total":2624.0,"rd":1160.0,"line":900.0,"parts":564.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"2.0+8AT-FWD","date":"2027/06/09","total":2750.0,"rd":400.0,"line":900.0,"parts":1450.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.5+6DCT-FWD","date":"2027/01/01","total":2717.0,"rd":1160.0,"line":900.0,"parts":657.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.5+6DCT-FWD","date":"2027/06/09","total":2837.0,"rd":400.0,"line":900.0,"parts":1537.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.6+7DCT-AWD","date":"2027/01/01","total":2627.0,"rd":1160.0,"line":900.0,"parts":567.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.6+7DCT-AWD","date":"2027/06/09","total":2836.0,"rd":400.0,"line":900.0,"parts":1536.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY","config":"1.6+7DCT-AWD","date":"2027/01/01","total":2652.0,"rd":1160.0,"line":900.0,"parts":592.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY","config":"1.6+7DCT-AWD","date":"2027/06/09","total":2781.0,"rd":400.0,"line":900.0,"parts":1481.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY","config":"1.6+7DCT-FWD","date":"2027/01/01","total":2732.0,"rd":1160.0,"line":900.0,"parts":672.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY","config":"1.6+7DCT-FWD","date":"2027/06/09","total":2761.0,"rd":400.0,"line":900.0,"parts":1461.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J8","code":"T26","config":"2.0+7DCT-AWD","date":"2027/01/01","total":2617.0,"rd":1160.0,"line":900.0,"parts":557.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J8","code":"T26","config":"2.0+7DCT-AWD","date":"2027/06/09","total":2612.0,"rd":400.0,"line":900.0,"parts":1312.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"MX","code":"M32TFL3","config":"2.0+8AT-AWD","date":"2027/01/01","total":2649.0,"rd":1160.0,"line":900.0,"parts":589.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"MX","code":"M32TFL3","config":"2.0+8AT-AWD","date":"2027/06/09","total":2866.0,"rd":400.0,"line":900.0,"parts":1566.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"L8-R","code":"T1G-R","config":"1.5+DHT-AWD","date":"2027/01/01","total":2295.0,"rd":1160.0,"line":900.0,"parts":235.0,"category":"NEV","target":1500.0},{"factory":"AGM","model":"L8-R","code":"T1G-R","config":"1.5+DHT-AWD","date":"2027/06/09","total":1745.0,"rd":400.0,"line":900.0,"parts":445.0,"category":"NEV","target":1500.0},{"factory":"AGM","model":"L8-R","code":"T1G-R","config":"1.5+DHT-FWD","date":"2027/01/01","total":2295.0,"rd":1160.0,"line":900.0,"parts":235.0,"category":"NEV","target":1500.0},{"factory":"AGM","model":"L8-R","code":"T1G-R","config":"1.5+DHT-FWD","date":"2027/06/09","total":1745.0,"rd":400.0,"line":900.0,"parts":445.0,"category":"NEV","target":1500.0},{"factory":"AGS","model":"C4","code":"T13C","config":"1.5+6DCT-FWD","date":"2027/01/01","total":2603.0,"rd":1000.0,"line":900.0,"parts":703.0,"category":"ICE","target":2567.0},{"factory":"AGS","model":"C4","code":"T13C","config":"1.5+6DCT-FWD","date":"2027/05/01","total":2619.0,"rd":600.0,"line":900.0,"parts":1119.0,"category":"ICE","target":2567.0},{"factory":"AGS","model":"L4","code":"T13T","config":"1.5+6DCT-FWD","date":"2027/01/01","total":2631.0,"rd":1000.0,"line":900.0,"parts":731.0,"category":"ICE","target":2567.0},{"factory":"AGS","model":"L4","code":"T13T","config":"1.5+6DCT-FWD","date":"2027/05/01","total":2614.0,"rd":600.0,"line":900.0,"parts":1114.0,"category":"ICE","target":2567.0},{"factory":"AGS","model":"ET-R","code":"E0Y","config":"1.5+DHT-AWD","date":"2027/01/01","total":1554.0,"rd":1000.0,"line":0.0,"parts":554.0,"category":"NEV","target":1500.0},{"factory":"AGS","model":"ET8-R","code":"E02","config":"1.5+DHT-AWD","date":"2027/01/01","total":1554.0,"rd":1000.0,"line":0.0,"parts":554.0,"category":"NEV","target":1500.0},{"factory":"AGS","model":"V27-R","code":"S5D","config":"1.5+DHT-AWD","date":"2027/01/01","total":1554.0,"rd":1000.0,"line":0.0,"parts":554.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"ET-R","code":"E0Y-FL","config":"1.5+DHT-AWD","date":"2027/04/30","total":2198.0,"rd":750.0,"line":900.0,"parts":548.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"ET8-R","code":"E02","config":"1.5+DHT-AWD","date":"2027/06/30","total":2198.0,"rd":750.0,"line":900.0,"parts":548.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"V25-R","code":"S59D","config":"1.5+DHT-AWD","date":"2027/05/30","total":2198.0,"rd":750.0,"line":900.0,"parts":548.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"V27-R","code":"S5D","config":"1.5+DHT-AWD","date":"2027/03/30","total":2198.0,"rd":750.0,"line":900.0,"parts":548.0,"category":"NEV","target":1500.0}],"factories":["AGK","AGM","AGS","AGN"],"nodes":{"AGK":["2027/01/01","2027/03/12"],"AGM":["2027/01/01","2027/06/09"],"AGS":["2027/01/01","2027/05/01"],"AGN":["2027/03/30","2027/04/30","2027/05/30","2027/06/30"]},"latest":{"AGK":"2027/03/12","AGM":"2027/06/09","AGS":"2027/05/01","AGN":"2027/06/30"}};
+
+const PROJ_DATA = {
+  "milestones": [
+    {"label": "KDP0", "progress": 10.0},
+    {"label": "KDP1", "progress": 25.0},
+    {"label": "KDP5-1", "progress": 50.0},
+    {"label": "KDP5-2", "progress": 65.0},
+    {"label": "KDP8", "progress": 85.0},
+    {"label": "KD-OKTB", "progress": 100.0}
+  ],
+  "projects": [
+    {"project": "AGN-V27", "factory": "AGN", "progress": 27.0, "status": "进行中", "sop": "2027/03/30"},
+    {"project": "AGN-E0YFL", "factory": "AGN", "progress": 27.0, "status": "进行中", "sop": "2027/04/30"},
+    {"project": "AGN-V25", "factory": "AGN", "progress": 27.0, "status": "进行中", "sop": "2027/05/30"},
+    {"project": "AGN-E02", "factory": "AGN", "progress": 27.0, "status": "进行中", "sop": "2027/06/30"},
+    {"project": "AGN-G700", "factory": "AGN", "progress": 27.0, "status": "进行中", "sop": "2027/07/30"},
+    {"project": "AGS-L4", "factory": "AGS", "progress": 98.5, "status": "进行中", "sop": "2026/08/20"},
+    {"project": "AGS-C4", "factory": "AGS", "progress": 76.5, "status": "进行中", "sop": "2026/10/20"},
+    {"project": "AGS-QQ3", "factory": "AGS", "progress": 5.0, "status": "进行中", "sop": "TBD"},
+    {"project": "AGM-L8 REEV", "factory": "AGM", "progress": 24.5, "status": "进行中", "sop": "2027/01/30"},
+    {"project": "AGM-J8 PHEV", "factory": "AGM", "progress": 24.0, "status": "进行中", "sop": "2027/02/28"},
+    {"project": "AGM-T1EJFL", "factory": "AGM", "progress": 21.0, "status": "进行中", "sop": "2027/05/30"},
+    {"project": "AGK-T1Q REEV", "factory": "AGK", "progress": 7.5, "status": "进行中", "sop": "2027/03/30"},
+    {"project": "AGK-T28FL", "factory": "AGK", "progress": 24.0, "status": "进行中", "sop": "2027/06/30"},
+    {"project": "AGK-T1ED", "factory": "AGK", "progress": 28.0, "status": "进行中", "sop": "2027/10/30"},
+    {"project": "AGM-A8", "factory": "AGM", "progress": 100.0, "status": "完成", "sop": "2026/06/30"},
+    {"project": "AGM-MX", "factory": "AGM", "progress": 97.0, "status": "风险", "sop": "2026/05/15"},
+    {"project": "AGK-T4L", "factory": "AGK", "progress": 100.0, "status": "完成", "sop": "2026/04/22"},
+    {"project": "AGK-L6", "factory": "AGK", "progress": 98.5, "status": "进行中", "sop": "2026/08/20"},
+    {"project": "AGS-E0Y DKD", "factory": "AGS", "progress": 98.5, "status": "进行中", "sop": "2026/05/20"},
+    {"project": "AGS-E02 DKD", "factory": "AGS", "progress": 98.5, "status": "进行中", "sop": "2026/07/20"},
+    {"project": "AGS-V27 DKD", "factory": "AGS", "progress": 98.5, "status": "进行中", "sop": "2026/06/20"}
+  ],
+  "factoryOrder": ["AGK", "AGM", "AGS", "AGN"]
+};
+
+const SPECIAL_DATA = [
+  {"name": "发动机1.5", "progress": 81.0, "sop": "已立项推进中"},
+  {"name": "发动机1.6", "progress": 92.0, "sop": "商品化评审中"},
+  {"name": "发动机2.0", "progress": 32.5, "sop": "立项及开发阶段"},
+  {"name": "变速箱8AT", "progress": 24.0, "sop": "立项过关"},
+  {"name": "变速箱DCT", "progress": 24.0, "sop": "立项过关"},
+  {"name": "动力电池", "progress": 0.0, "sop": "预研准备中"},
+  {"name": "冲压项目", "progress": 0.0, "sop": "预研准备中"}
+];
+
+/* ==================== 2. 全局状态与 Tab 切换函数 ==================== */
+let currentScoreFactory = "AGK";
+let currentScoreNode = SCORE_DATA.latest["AGK"];
+let currentProjFactory = "ALL";
+let currentGapFilter = "all";
+let scoreSortOn = false;
+let compareOn = false;
+
+/* 记住上次查看状态（工厂/节点/差额/排序/对比/所在标签页） */
+const SAVE_KEY = 'kdMonthlyStateV1';
+function saveState() {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      factory: currentScoreFactory,
+      node: currentScoreNode,
+      gap: currentGapFilter,
+      sort: scoreSortOn,
+      cmp: compareOn,
+      tab: document.querySelector('.tab-content.active')?.id || 'tab-score'
+    }));
+  } catch (e) {}
+}
+function restoreState() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+    if (!s) return;
+    if (s.factory && SCORE_DATA.latest[s.factory]) {
+      currentScoreFactory = s.factory;
+      currentScoreNode = SCORE_DATA.nodes[s.factory].includes(s.node) ? s.node : SCORE_DATA.latest[s.factory];
+    }
+    currentGapFilter = ['all', 'miss', 'big'].includes(s.gap) ? s.gap : 'all';
+    scoreSortOn = !!s.sort;
+    compareOn = !!s.cmp;
+    if (s.tab && document.getElementById(s.tab)) setTimeout(() => switchTab(s.tab), 0);
+  } catch (e) {}
+}
+
+function toggleScoreSort() {
+  scoreSortOn = !scoreSortOn;
+  const btn = document.getElementById('scoreSortBtn');
+  btn.classList.toggle('active', scoreSortOn);
+  btn.textContent = scoreSortOn ? '差额排序 ↑' : '差额排序';
+  saveState();
+  renderScore(false);
+}
+
+function toggleCompare() {
+  compareOn = !compareOn;
+  const btn = document.getElementById('cmpToggleBtn');
+  btn.classList.toggle('active', compareOn);
+  btn.textContent = compareOn ? '对比上一节点' : '对比上一节点';
+  saveState();
+  renderScore(false);
+}
+
+/* 查找该配置在上一个节点的数据（按该厂 nodes 时间顺序找前一节点） */
+function prevNodeData(r) {
+  const nodes = SCORE_DATA.nodes[r.factory] || [];
+  const idx = nodes.indexOf(r.date);
+  if (idx <= 0) return null;
+  return SCORE_DATA.rows.find(x => x.factory === r.factory && x.date === nodes[idx - 1] && x.model === r.model && x.code === r.code && x.config === r.config) || null;
+}
+
+function setGapFilter(mode) {
+  if (currentGapFilter === mode) return;
+  currentGapFilter = mode;
+  document.querySelectorAll('#scoreGapGroup button').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('onclick').includes(`'${mode}'`));
+  });
+  saveState();
+  scoreCrossfade(() => renderScore());
+}
+
+function switchTab(tabId) {
+  if (document.getElementById(tabId).classList.contains('active')) return;
+  const cur = document.querySelector('.tab-content.active');
+  const indexMap = { 'tab-score': 0, 'tab-project': 1, 'tab-special': 2, 'tab-policy': 3, 'tab-exec': 4 };
+  const next = document.getElementById(tabId);
+
+  // 第一步：旧页播放快速淡出
+  if (cur) {
+    cur.classList.add('leaving');
+    cur.classList.remove('active');
+  }
+  // 第二步：新页激活并播放入场动画
+  setTimeout(() => {
+    cur && cur.classList.remove('leaving');
+    next.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item')[indexMap[tabId]].classList.add('active');
+    // 逐行递增飞入延迟：卡片就位(0.2s)后每行错开 0.05s
+    next.querySelectorAll('.score-row, .gantt-row').forEach((row, i) => {
+      row.style.animationDelay = (0.26 + i * 0.05).toFixed(2) + 's';
+    });
+  }, 150);
+}
+
+/* ==================== 3. 积分进展渲染逻辑（含搜索与目标） ==================== */
+function scoreCrossfade(done) {
+  const els = [document.getElementById('scoreSummary'), document.querySelector('#tab-score .card')].filter(Boolean);
+  els.forEach(el => el && el.classList.add('score-fading'));
+  setTimeout(() => {
+    els.forEach(el => el && el.classList.remove('score-fading'));
+    done();
+  }, 165);
+}
+
+function switchScoreNode(n) {
+  currentScoreNode = n;
+  saveState();
+  scoreCrossfade(() => renderScore());
+}
+
+function setScoreFactory(f) {
+  currentScoreFactory = f;
+  currentScoreNode = SCORE_DATA.latest[f];
+  saveState();
+  scoreCrossfade(() => renderScore());
+}
+
+function renderScore(animate) {
+  const isAnim = animate !== false;
+  document.querySelectorAll('#scoreFactoryGroup button').forEach(b => {
+    b.classList.toggle('active', b.textContent === currentScoreFactory);
+  });
+
+  const nodeBox = document.getElementById('scoreNodeGroup');
+  const nodes = SCORE_DATA.nodes[currentScoreFactory] || [];
+  nodeBox.innerHTML = nodes.map(n => 
+    `<button class="${n === currentScoreNode ? 'active':''}" onclick="switchScoreNode('${n}')">${n}</button>`
+  ).join('');
+
+  const keyword = (document.getElementById('scoreSearchInput')?.value || '').toLowerCase().trim();
+
+  let data = SCORE_DATA.rows.filter(r => r.factory === currentScoreFactory && r.date === currentScoreNode);
+  
+  // 目标差额筛选
+  if (currentGapFilter === 'miss') {
+    data = data.filter(r => r.total < r.target);
+  } else if (currentGapFilter === 'big') {
+    data = data.filter(r => (r.target - r.total) >= 100);
+  }
+  
+  // 搜索关键字过滤
+  if (keyword) {
+    data = data.filter(r => 
+      r.model.toLowerCase().includes(keyword) || 
+      r.code.toLowerCase().includes(keyword) || 
+      r.config.toLowerCase().includes(keyword)
+    );
+  }
+
+  // 差额排序（缺口最大优先；达标行按超出量降序）——仅在开关开启时应用
+  if (scoreSortOn) {
+    data = [...data].sort((a, b) => (a.total - a.target) - (b.total - b.target));
+  }
+
+  const total = data.length;
+  const hit = data.filter(r => r.total >= r.target).length;
+  const miss = total - hit;
+  const avg = total ? (data.reduce((s, r) => s + r.total, 0) / total).toFixed(1) : 0;
+
+  document.getElementById('scoreSummary').innerHTML = `
+    <div class="metric-card"><div class="k">评估车型配置数</div><div class="v" data-count="${total}">0</div><div class="s">厂区: ${currentScoreFactory} | 节点: ${currentScoreNode}</div></div>
+    <div class="metric-card"><div class="k">达标配置数</div><div class="v" style="color:var(--green);" data-count="${hit}">0</div><div class="s">达到或超过年度目标线</div></div>
+    <div class="metric-card"><div class="k">未达标配置数</div><div class="v" style="color:${miss>0?'var(--bad)':'var(--navy)'};" data-count="${miss}">0</div><div class="s">仍需补充零部件或产线积分</div></div>
+    <div class="metric-card"><div class="k">当前平均积分</div><div class="v" data-count="${avg}">0</div><div class="s">标准线: ICE 2567 / NEV 1500</div></div>
+  `;
+  // KPI 数字滚动：从旧值平滑滚动到新值（可裁剪为整数，平均分保留1位小数）
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('#scoreSummary .v').forEach(el => {
+    if (reduceMotion || !isAnim) { el.textContent = el.dataset.count; return; }
+    const target = parseFloat(el.dataset.count);
+    const decimals = Number.isInteger(target) ? 0 : 1;
+    const dur = 450, start = performance.now();
+    (function tick(now) {
+      const t = Math.min((now - start) / dur, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      el.textContent = (target * ease).toFixed(decimals);
+      if (t < 1) requestAnimationFrame(tick);
+    })(start);
+  });
+
+  const maxVal = Math.max(3000, ...data.map(r => r.total));
+  const scale = document.getElementById('scoreScale');
+  scale.innerHTML = '';
+  for (let i = 0; i <= maxVal; i += 1000) {
+    const pct = (i / maxVal * 100).toFixed(1);
+    scale.innerHTML += `<span class="tick" style="left:${pct}%">${i}</span>`;
+  }
+
+  const rowsBox = document.getElementById('scoreRows');
+  rowsBox.classList.toggle('no-anim', !isAnim);
+  if (data.length === 0) {
+    rowsBox.innerHTML = '<div style="padding:20px; text-align:center; color:var(--muted); font-size:12px;">未检索到匹配的车型数据</div>';
+    return;
+  }
+
+  rowsBox.innerHTML = data.map((r, i) => {
+    const gap = r.total - r.target;
+    const gapClass = gap >= 0 ? 'color:var(--green);font-weight:700;' : 'color:var(--bad);font-weight:700;';
+    const missClass = gap < 0 ? ' miss' : '';
+    const targetPct = (r.target / maxVal * 100).toFixed(1);
+    const totalPct = (r.total / maxVal * 100).toFixed(1);
+    const rowDelay = (0.18 + i * 0.03).toFixed(2);
+
+    // 节点对比微标注：与上一节点积分变化
+    let cmpHtml = '';
+    if (compareOn) {
+      const prev = prevNodeData(r);
+      if (prev) {
+        const d = r.total - prev.total;
+        if (d > 0) cmpHtml = `<span class="cmp up">▲${d}</span>`;
+        else if (d < 0) cmpHtml = `<span class="cmp down">▼${-d}</span>`;
+        else cmpHtml = `<span class="cmp flat">—</span>`;
+      }
+    }
+
+    return `
+      <div class="score-row${missClass}" style="animation-delay:${rowDelay}s;">
+        <div style="padding:6px 12px; font-size:11.5px;"><b>${r.model}</b> <span style="font-size:9.5px;color:#888;">(${r.category})</span></div>
+        <div style="padding:6px 12px; font-size:10.5px; color:#475569;">${r.config}</div>
+        <div style="position:relative; height:100%; display:flex; align-items:center;">
+          <div class="score-plot" style="width:100%;">
+            <div class="score-targetline" style="left:${targetPct}%;"></div>
+            <div class="score-bar" style="--bar-w:${totalPct}%; animation-delay:${rowDelay}s;">
+              <div class="score-segm rd" style="width:${(r.rd/r.total*100).toFixed(1)}%;">${r.rd}</div>
+              <div class="score-segm line" style="width:${(r.line/r.total*100).toFixed(1)}%;">${r.line}</div>
+              <div class="score-segm parts" style="width:${(r.parts/r.total*100).toFixed(1)}%;">${r.parts}</div>
+            </div>
+            <span style="position:absolute; left:calc(${totalPct}% + 6px); top:2px; font-size:10px; font-weight:700;">${r.total}</span>
+          </div>
+        </div>
+        <div style="padding:6px 8px; font-size:10.5px; ${gapClass}">${gap >= 0 ? '+' + gap : gap}${cmpHtml}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ==================== 4. 项目进展渲染逻辑（彻底消除OKTB重叠） ==================== */
+function setProjFactory(f) {
+  currentProjFactory = f;
+  renderProj();
+}
+
+function renderProj() {
+  document.querySelectorAll('#projFactoryGroup button').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('onclick').includes(`'${currentProjFactory}'`));
+  });
+
+  const list = currentProjFactory === "ALL" 
+    ? PROJ_DATA.projects 
+    : PROJ_DATA.projects.filter(p => p.factory === currentProjFactory);
+
+  const total = list.length;
+  const kdp52 = list.filter(p => p.progress >= 65).length;
+  const kdp8 = list.filter(p => p.progress >= 85).length;
+  const risk = list.filter(p => p.status === "风险").length;
+
+  // 风险汇总条：仅当前筛选范围存在风险项时显示
+  const banner = document.getElementById('projRiskBanner');
+  const riskProjs = list.filter(p => p.status === "风险");
+  if (riskProjs.length) {
+    banner.style.display = 'flex';
+    banner.innerHTML = `<b>风险预警 (${riskProjs.length})</b><span class="risk-list">${riskProjs.map(p => {
+      const modelName = p.project.replace(/^[^-]+-/, '');
+      return `<span class="risk-tag" onclick="highlightRiskRow('${modelName}')">${p.factory}·${modelName} ${p.progress}%</span>`;
+    }).join('')}</span>`;
+  } else {
+    banner.style.display = 'none';
+    banner.innerHTML = '';
+  }
+
+  document.getElementById('projSummary').innerHTML = `
+    <div class="metric-card"><div class="k">项目总数</div><div class="v">${total}</div><div class="s">包含四大厂区重点车型</div></div>
+    <div class="metric-card"><div class="k">已达 KDP5-2 节点</div><div class="v">${kdp52}</div><div class="s">进度达到或超过 65%</div></div>
+    <div class="metric-card"><div class="k">已达 KDP8 节点</div><div class="v" style="color:var(--green);">${kdp8}</div><div class="s">进度达到或超过 85%</div></div>
+    <div class="metric-card"><div class="k">异常风险预警</div><div class="v" style="color:${risk>0?'var(--bad)':'var(--navy)'};">${risk}</div><div class="s">需重点协调资源项目</div></div>
+  `;
+
+  const scale = document.getElementById('projScale');
+  scale.innerHTML = PROJ_DATA.milestones.map(m => `
+    <div class="tick" style="left:${m.progress}%;">
+      <b>${m.label}</b>
+      <span>${m.progress}%</span>
+    </div>
+  `).join('');
+
+  const rowsBox = document.getElementById('projRows');
+  const factoryList = currentProjFactory === "ALL" ? PROJ_DATA.factoryOrder : [currentProjFactory];
+
+  rowsBox.innerHTML = factoryList.map(f => {
+    const ps = list.filter(p => p.factory === f);
+    if (!ps.length) return '';
+    return `
+      <div class="factory-block">
+        <div class="factory-head">${f}</div>
+        ${ps.map(p => {
+          const modelName = p.project.replace(/^[^-]+-/, '');
+          const pct = Math.min(100, Math.max(0, p.progress));
+          return `
+            <div class="gantt-row">
+              <div style="padding:8px 12px; font-weight:700; font-size:11.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${modelName}">${modelName}</div>
+              <div style="padding:8px 8px; font-size:11px; color:#64748B;">${p.sop}</div>
+              <div class="gantt-plot">
+                ${PROJ_DATA.milestones.map(m => `<span class="milestone-line" style="left:${m.progress}%;"></span>`).join('')}
+                <div class="gantt-track"></div>
+                <div class="gantt-bar" style="width:${pct}%;">
+                  ${pct >= 5 ? `<span class="gantt-val in-bar">${p.progress}%</span>` : ''}
+                </div>
+                ${pct < 5 ? `<span class="gantt-val out-bar" style="left:6px;">${p.progress}%</span>` : ''}
+              </div>
+              <div style="padding:8px 8px;"><span class="status-tag ${p.status}">${p.status}</span></div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }).join('');
+}
+
+/* ==================== 5. 专项进展甘特视图渲染 ==================== */
+function renderSpecial() {
+  const scale = document.getElementById('specialScale');
+  scale.innerHTML = PROJ_DATA.milestones.map(m => `
+    <div class="tick" style="left:${m.progress}%;">
+      <b>${m.label}</b>
+      <span>${m.progress}%</span>
+    </div>
+  `).join('');
+
+  document.getElementById('specialGanttRows').innerHTML = SPECIAL_DATA.map(s => {
+    const pct = Math.min(100, Math.max(0, s.progress));
+    return `
+    <div class="gantt-row">
+      <div style="padding:8px 12px; font-weight:700; font-size:11.5px; color:var(--navy);">${s.name}</div>
+      <div style="padding:8px 8px; font-size:11px; color:#64748B;">${s.sop}</div>
+      <div class="gantt-plot">
+        ${PROJ_DATA.milestones.map(m => `<span class="milestone-line" style="left:${m.progress}%;"></span>`).join('')}
+        <div class="gantt-track"></div>
+        <div class="gantt-bar" style="width:${pct}%;">
+          ${pct >= 5 ? `<span class="gantt-val in-bar">${s.progress}%</span>` : ''}
+        </div>
+        ${pct < 5 ? `<span class="gantt-val out-bar" style="left:6px;">${s.progress}%</span>` : ''}
+      </div>
+      <div style="padding:8px 8px;"><span class="status-tag ${s.progress >= 80 ? '完成' : (s.progress > 0 ? '进行中' : '未开始')}">${s.progress >= 80 ? '阶段完成' : (s.progress > 0 ? '进行中' : '未开始')}</span></div>
+    </div>
+  `;
+  }).join('');
+}
+
+/* 风险标签点击：定位并高亮对应项目行 */
+function highlightRiskRow(modelName) {
+  const rows = document.querySelectorAll('#projRows .gantt-row');
+  rows.forEach(row => {
+    const title = row.querySelector('div[title]')?.getAttribute('title') || '';
+    if (title === modelName) {
+      row.style.outline = '2px solid var(--bad)';
+      row.style.background = '#FCEAE8';
+      row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => { row.style.outline = ''; row.style.background = ''; }, 2600);
+    }
+  });
+}
+
+/* 初始化运行 */
+window.onload = function() {
+  restoreState();
+  // 同步排序/对比开关的初始显示状态
+  const sortBtn = document.getElementById('scoreSortBtn');
+  if (sortBtn) {
+    sortBtn.classList.toggle('active', scoreSortOn);
+    sortBtn.textContent = scoreSortOn ? '差额排序 ↑' : '差额排序';
+  }
+  document.getElementById('cmpToggleBtn')?.classList.toggle('active', compareOn);
+  renderScore();
+  renderProj();
+  renderSpecial();
+};
+</script>
+
+</body>
+</html>
