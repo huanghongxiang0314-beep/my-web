@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KD 部门月度综合管理看板 - 2026年9月</title>
+<title>KD 部门月度综合管理看板 - 2026年10月</title>
 
 <!-- 不蒜子PV/UV点击量统计脚本 -->
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
@@ -181,22 +181,6 @@
   .cmp.down { color: #B91C1C; }
   .cmp.flat { color: #94A3B8; }
 
-  /* 第二页风险汇总条 */
-  .risk-banner {
-    display: flex; align-items: center; gap: 10px;
-    border: 1px solid #F2C4C4; background: #FDF8F8;
-    padding: 8px 14px; margin-bottom: 14px;
-    font-size: 11.5px; color: #9C2F2F;
-  }
-  .risk-banner b { font-weight: 700; }
-  .risk-banner .risk-list { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-  .risk-tag {
-    border: 1px solid #EEBEBE; background: #FFF; color: #9C2F2F;
-    padding: 2px 9px; font-size: 10.5px; font-weight: 700; cursor: pointer;
-    transition: all 0.15s; font-variant-numeric: tabular-nums;
-  }
-  .risk-tag:hover { background: #FBEAEA; }
-
   /* Section 通用样式 */
   .section-block { margin-bottom: 32px; }
   .section-title {
@@ -288,17 +272,24 @@
   .chart-inner { min-width: 1020px; }
   
   /* 积分柱状图样式（第一页参照，等宽数字+细分割线） */
-  .axis-score { display: grid; grid-template-columns: 130px 270px 1fr 100px; height: 34px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--muted); background: #EEF2F6; }
+  .axis-score { display: grid; grid-template-columns: 130px 270px 1fr 100px; height: 42px; border-bottom: 1px solid var(--border); font-size: 11px; color: var(--muted); background: #EEF2F6; }
   .axis-score > div { display: flex; align-items: center; }
-  .scale-score { position: relative; height: 100%; margin-right: 12px; }
-  .scale-score .tick { position: absolute; bottom: 10px; transform: translateX(-50%); font-variant-numeric: tabular-nums; }
+  .scale-score { position: relative; height: 100%; margin-right: 60px; }
+  .scale-score .tick { position: absolute; bottom: 3px; transform: translateX(-50%); font-variant-numeric: tabular-nums; }
   .score-row { display: grid; grid-template-columns: 130px 270px 1fr 100px; min-height: 48px; align-items: center; }
   .score-row:nth-child(even) { background: #F8FAFC; }
   .score-row:hover { background: #F0F4F8; }
   .score-row.miss { background: #FEF5F4; box-shadow: inset 3px 0 0 var(--bad); }
   .score-row.miss:hover { background: #FCEAE8; }
   .score-plot { position: relative; height: 20px; margin-right: 60px; background-image: linear-gradient(to right, rgba(15,23,42,0.06) 1px, transparent 1px); background-size: 20% 100%; }
-  .score-targetline { position: absolute; top: -4px; bottom: -4px; width: 1.5px; background: var(--navy); z-index: 5; }
+  .score-targetline { position: absolute; top: 0; bottom: 0; width: 1px; background: #D7DEE7; z-index: 1; pointer-events: none; }
+  .score-targetline-label { position: absolute; top: 3px; transform: translateX(-50%); padding: 0 3px; background: #EEF2F6; color: #64748B; font-size: 9px; line-height: 1.2; white-space: nowrap; z-index: 2; pointer-events: none; }
+  #scoreRows { position: relative; isolation: isolate; }
+  #scoreRows .score-row { position: relative; z-index: 2; }
+  #scoreRows .score-targetline { z-index: 3; }
+  .score-total-label { position:absolute; top:2px; font-size:10px; font-weight:700; white-space:nowrap; z-index:3; }
+  .score-total-label.outside { transform:translateX(6px); color:var(--ink); }
+  .score-total-label.inside { transform:translateX(-100%); padding-right:5px; color:#FFF; }
   .score-bar { position: absolute; left: 0; top: 0; height: 20px; display: flex; }
   .score-segm { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 9.5px; font-weight: 600; color: #FFF; font-variant-numeric: tabular-nums; }
   .score-segm.rd { background: var(--rd); }
@@ -363,19 +354,31 @@
   .dot-box { width: 10px; height: 10px; display: inline-block; }
 
   /* ===== 第二页/第三页: 与第一页统一的方正柱状图（独立配色） ===== */
-  #tab-project .gantt-track { background: #EBF7F1; }
+  #tab-project .gantt-track { background: #E9EFF5; }
   #tab-special .gantt-track { background: #E9F4F6; }
-  #tab-project .gantt-bar { background: #28b873; }
+  #tab-project .gantt-bar { background: #2C5282; }
   #tab-special .gantt-bar { background: #008397; }
 
   /* 里程碑竖线随各页主色调（低饱和淡线） */
-  #tab-project .milestone-line { border-left-color: rgba(40, 184, 115, 0.4); }
+  #tab-project .milestone-line { border-left-color: rgba(44, 82, 130, 0.4); }
   #tab-special .milestone-line { border-left-color: rgba(0, 131, 151, 0.4); }
 
   /* 进度数值: 与第一页一致，宽柱白字居中；窄柱放柱右侧 */
   .gantt-val { position: absolute; transform: none; background: transparent; padding: 0; }
   .gantt-val.in-bar { left: 0; top: 0; width: 100%; height: 20px; line-height: 20px; text-align: center; color: #FFF; font-weight: 600; white-space: nowrap; font-size: 9.5px; font-variant-numeric: tabular-nums; }
   .gantt-val.out-bar { top: 14px; height: 20px; line-height: 20px; background: #FFF; border: 1px solid var(--border); color: var(--navy); padding: 0 4px; font-size: 9px; font-variant-numeric: tabular-nums; }
+
+
+  /* 积分缺口应对方案悬停卡片：固定定位并跟随鼠标，不受图表滚动容器裁切 */
+  #gapPlanTooltip {
+    position: fixed; z-index: 3000; display: none; width: min(360px, calc(100vw - 24px));
+    max-height: min(320px, calc(100vh - 24px)); overflow-y: auto;
+    padding: 14px 16px; background: #FFFFFF; color: #0F172A;
+    border: 1px solid #CBD5E1; border-left: 3px solid #2251FF;
+    box-shadow: 0 8px 28px rgba(15,23,42,0.18); pointer-events: none;
+  }
+  #gapPlanTooltip .gap-plan-title { font-size: 12px; font-weight: 700; margin-bottom: 8px; color: #0F172A; }
+  #gapPlanTooltip .gap-plan-detail { font-size: 11.5px; line-height: 1.75; color: #334155; white-space: pre-wrap; overflow-wrap: anywhere; }
 
   @media (max-width: 900px) {
     .main-nav { padding: 0 10px; flex-wrap: wrap; }
@@ -397,7 +400,7 @@
       </div>
     </div>
     <div class="nav-header-meta">
-      <div class="meta-row">数据更新时间：2026年9月 ｜ 归口部门：KD推进科</div>
+      <div class="meta-row">数据更新时间：2026年10月 ｜ 归口部门：KD推进科</div>
       <div class="pv-uv-box">
         PV点击量: <span id="busuanzi_value_page_pv">--</span> | UV访客数: <span id="busuanzi_value_site_uv">--</span>
       </div>
@@ -503,14 +506,12 @@
         </div>
       </div>
 
-      <div class="risk-banner" id="projRiskBanner" style="display:none;"></div>
-
       <div class="summary-grid" id="projSummary"></div>
 
       <div class="card" style="padding:0; overflow:hidden;">
         <div class="legend-bar">
-          <span class="legend-item"><i class="dot-box" style="background:#28b873; width:16px;"></i>当前推进进度</span>
-          <span class="legend-item"><i class="dot-box" style="width:1px; height:12px; border-left:1px dashed rgba(40,184,115,0.6);"></i>关键里程碑关口 (KDP0-OKTB)</span>
+          <span class="legend-item"><i class="dot-box" style="background:#2C5282; width:16px;"></i>当前推进进度</span>
+          <span class="legend-item"><i class="dot-box" style="width:1px; height:12px; border-left:1px dashed rgba(44,82,130,0.6);"></i>关键里程碑关口 (KDP0-OKTB)</span>
         </div>
         <div class="chart-container">
           <div class="chart-inner">
@@ -567,86 +568,34 @@
         </div>
 
         <div class="policy-card">
-          <div class="policy-title">1. 研发积分政策变化 [9月9日最新消息]</div>
-          <div class="policy-text">（1）自 <span class="num-hl">2026年</span> 起，轻型乘用车研发积分上限为 <span class="num-good">1500分</span>。
-（2）自 <span class="num-hl">2027年</span> 起，研发投入不超过 <span class="num-warn">7亿卢布</span> 时，研发积分上限按公式计算（最高 <span class="num-hl">1000分</span>）；研发投入超过 <span class="num-warn">7亿卢布</span> 时，上限为 <span class="num-good">1500分</span>。
-原草案中“研发积分≤零部件积分+产线积分”的要求被暂时删除，该项要求或将推迟至 <span class="num-hl">2027年7月1日</span> 起实施。
-
-<strong>影响：</strong>若政策能尽快发布（<span class="num-hl">11月之前</span>），AGS/AGM有机会将今年已获取研发积分提升至 <span class="num-good">1120 / 1160分</span>。</div>
+          <div class="policy-title">1. 研发积分政策调整</div>
+          <div class="policy-text">(1) 积分上限调整
+自 <span class="num-hl">2026年</span> 起，轻型乘用车研发积分上限由原来的1000分提高至 <span class="num-good">1500分</span>。
+自 <span class="num-hl">2027年</span> 起，积分上限根据企业研发投入金额确定：
+• 研发投入不超过 <span class="num-warn">7亿卢布</span> 的，积分上限为 K×1000分（系数K随投入变化，最高对应1000分）；
+• 研发投入超过 <span class="num-warn">7亿卢布</span> 时，上限为 <span class="num-good">1500分</span>。
+(2) 积分重算规则
+• 积分计算结果向下取整。各日历年度取得的积分，仍按原定有效期限到期。
+• 法案生效后，企业可以申请重新计算原有研发积分。重新计算后的积分仍保留原积分的有效截止日期。
+<strong>已发布</strong>（<span class="num-hl">2026年9月29日</span>）：AGS/AGM可根据需要将今年已获取研发积分提升至 <span class="num-good">1120 / 1160分</span>，但需在 <span class="num-warn">12月31日</span> 前申请获取完成。</div>
         </div>
 
         <div class="policy-card">
-          <div class="policy-title">2. 信贷补贴新增本地化积分要求 [电动车/紫线车辆]</div>
-          <div class="policy-text">• 积分 <span class="num-hl">≥ 1200分</span>（不含研发积分）：可享车价 <span class="num-good">10%</span> 补贴，最高不超过 <span class="num-good">50万卢布</span>。
-• 积分 <span class="num-hl">≥ 2500分</span>（不含研发积分）：可享车价 <span class="num-good">35%</span> 补贴，最高不超过 <span class="num-good">92.5万卢布</span>。
-
-<strong>影响：</strong>自 <span class="num-warn">2027年1月1日</span> 起，DKD车辆或将无法获取贴息。</div>
-        </div>
-
-        <div class="policy-card">
-          <div class="policy-title">3. 719预修订草案条款</div>
-          <div class="policy-text">① NAMI将719法规内条目划分为三级：<span class="num-good">绿色(一级)</span>、<span class="num-hl">黄色(二级)</span>、<span class="num-warn">红色(三级 - 核心技术)</span>。
-② 第1级、第2级：若符合特定要求可保留当前积分，否则未来将逐步降低直至 <span class="num-warn">归零</span>。
-③ 第3级：若符合特定要求，可增分至 <span class="num-good">1.5倍</span>（自 <span class="num-hl">2027年1月1日</span> 起）。
-
-<strong>影响评估：</strong>政府意在获取涉及知识产权的技术文件；对于第3级（电池、发动机、变速箱等）核心技术，虽提供工艺文件可获 <span class="num-good">1.5倍积分</span>，但代价远大于收益，系技术机密换积分的不对等交易。</div>
-        </div>
-
-        <div class="policy-card">
-          <div class="policy-title">4. 电子电器件大电容法规修订</div>
-          <div class="policy-text">法规草案将“大容量电容”定义为“双电层超级电容，电容量 <span class="num-warn">＞ 1法拉</span>”。经我方专家反馈，汽车行业实际应用几乎不可能超过 <span class="num-hl">1法拉</span>。相关部门已接受意见，正在征集修订。
-
-<strong>影响：</strong>合理修订后，有望为我方带来增分机会。</div>
-        </div>
-
-        <div class="policy-card">
-          <div class="policy-title">5. SPIC 知识产权相关要求</div>
-          <div class="policy-text">根据工贸部文件，考虑在 SPIC 中纳入知识产权相关要求。若接受我方须依法提供技术机密。目前处于意见征集阶段，仍有谈判空间。</div>
-        </div>
-
-        <div style="font-size:12.5px; font-weight:800; color:var(--navy); margin:24px 0 14px 0; border-bottom:2px solid var(--navy); padding-bottom:6px;">
-          行业政策及优惠补贴动态
-        </div>
-
-        <div class="policy-card sub">
-          <div class="policy-title">① 整车积分申请暂停</div>
-          <div class="policy-text">受轴承政策影响，当前整车积分暂无法申请。待 <span class="num-hl">9月1日</span> 针对现行轴承政策的延期生效法令发布后，申请方可恢复。</div>
-        </div>
-
-        <div class="policy-card sub">
-          <div class="policy-title">② OTTC 拓展工作暂缓</div>
-          <div class="policy-text">受轴承政策影响，<span class="num-warn">9月7日至9月30日</span> 期间，OTTC 拓展工作暂缓开展。</div>
-        </div>
-
-        <div class="policy-card sub">
-          <div class="policy-title">③ 优惠汽车贷款与租赁政策缩水</div>
-          <div class="policy-text">【优惠汽车租赁】（<span class="num-hl">2026年6月18日</span>）
-• 电动车定义：纯电动或油电混动（动力电池容量必须 <span class="num-hl">≥ 25 kWh</span>）。
-• 高度本地化电动车（HL EV）：本地化积分 <span class="num-good">≥ 2500分</span>。
-
-支持标准：
-1) ICE/PHEV (电池 <span class="num-warn">＜ 25 kWh</span>)：<span class="num-hl">2026-01-01</span> 起积分 <span class="num-good">≥ 2500分</span>，享 <span class="num-good">10%</span> 首付折扣，最高不超 <span class="num-good">50万卢布</span>。
-2) 电动车 (BEV/REEV/电池 <span class="num-hl">≥ 25 kWh</span>)：享 <span class="num-good">10%</span> 首付折扣，最高不超 <span class="num-good">50万卢布</span>。
-3) 高度本地化电动车 (HL EV)：积分 <span class="num-good">≥ 2500分</span>，享 <span class="num-good">10%</span> 首付折扣，最高不超 <span class="num-good">92.5万卢布</span>。
-
-【优惠汽车贷款】：未来可能统一为车价 <span class="num-good">10%</span> 优惠，但电车最高不超 <span class="num-good">50万卢布</span>。</div>
-        </div>
-
-        <div class="policy-card sub">
-          <div class="policy-title">④ HEV 政策认定口径切换</div>
-          <div class="policy-text">现行框架下 HEV 与 PHEV 适用相同政策；未来紫线政策发布后，HEV 将与 ICE 适用相同政策口径。</div>
-        </div>
-
-        <div class="policy-card sub">
-          <div class="policy-title">⑤ PHEV 补贴调整预警</div>
-          <div class="policy-text">目前政府对 PHEV 的认定要求处于调整中，未来针对 PHEV 车型的优惠补贴或存在进一步降低可能。</div>
-        </div>
-
-        <div class="policy-card sub">
-          <div class="policy-title">⑥ 研发积分政策三种备选方案</div>
-          <div class="policy-text">方案①：积分上限由 <span class="num-hl">1000分</span> 提升至 <span class="num-good">1500分</span>，其他规则不变。
-方案②：上限提升至 <span class="num-good">1500分</span>，但增加“研发积分 ≤ 零部件积分 + 工艺积分”约束。
-方案③：上限维持 <span class="num-hl">1000分</span>，按年度挂钩：<span class="num-hl">2026年</span> 不超 <span class="num-hl">100%</span>、<span class="num-hl">2027年</span> 不超 <span class="num-warn">60%</span>、<span class="num-hl">2028年</span> 不超 <span class="num-warn">40%</span>。工艺积分未来存在取消可能。</div>
+          <div class="policy-title">2. 紫线政策（电动车/紫线车辆）[预计月底发布]</div>
+          <div class="policy-text">(1) 适用车型与本地化要求
+• 适用车型：包括所有BEV、REEV，以及动力电池容量不低于 25 kWh的PHEV。
+• 工厂要求：工厂自 <span class="num-warn">2027年4月1日</span> 起需具备CKD条件。否则相关车型将因本地化积分不达标，无法获得电车认定及相应补贴。
+(2) 2027年积分门槛
+• 2027年全年积分满分线为 <span class="num-hl">1500分</span>。
+• 自 <span class="num-warn">2027年4月1日</span> 起生产的相关车型，本地化积分门槛为 <span class="num-hl">1200分</span>（不含研发积分）。
+(3) 各年度积分满分线规划
+• 2026年：<span class="num-hl">1000分</span>
+• 2027年：<span class="num-hl">1500分</span>
+• 2028年：<span class="num-hl">2000分</span>
+• 2029年：<span class="num-hl">2567分</span>
+• 2030-2031年：均为 <span class="num-hl">3701分</span>
+• 2032-2033年：均为 <span class="num-hl">5400分</span>
+<strong>影响：</strong>自 <span class="num-warn">2027年1月1日</span> 起，DKD车辆或将无法获取贴息（需满足本地化积分要求）。</div>
         </div>
       </div>
     </section>
@@ -667,33 +616,60 @@
         
         <div class="matrix-grid">
           <div class="matrix-card high-high">
-            <span class="matrix-tag">紧急且重要 (High Impact / High Urgency)</span>
-            <div style="font-size:12px; font-weight:700; color:#9B1C1C; margin-bottom:6px;">1. 常熟基地改造费用预算决议 — 责任人：王军茂</div>
-            <p style="font-size:11.5px; color:#7F1D1D; margin-bottom:8px;"><strong>排查现状：</strong>工程院未提报 CKD 国内改造费用预算，常熟基地改造所需 <span class="num-warn">870 万</span> 资金尚无预算支撑。</p>
+            <span class="matrix-tag">项目交付风险 (High Impact / High Urgency)</span>
+            <div style="font-size:12px; font-weight:700; color:#9B1C1C; margin-bottom:6px;">1. AGN 土建延期及设备发运周期风险 — 责任人：外方、国际物流部</div>
+            <p style="font-size:11.5px; color:#7F1D1D; margin-bottom:8px;">土建进度延期，需外方制定追赶计划并于 10 月 26 日前明确；设备发运需求周期为 35 天，当前物流保障周期约 43 天，项目存在约 7 天延期风险。</p>
             <div style="font-size:11px; background:#FFF; padding:10px; border-radius:4px; border:1px solid #FEB2B2;">
-              <strong>决策建议：</strong>需要协调解决该笔费用的出处与预算划转，确保项目按计划节点推进。
+              决策建议：协调外方提交可执行的土建追赶计划，并由国际物流部明确 35 天发运保障方案，同步评估安装调试节点影响。
             </div>
           </div>
 
           <div class="matrix-card high-mid">
-            <span class="matrix-tag">重要关注 (High Impact / Medium Urgency)</span>
-            <div style="font-size:12px; font-weight:700; color:#744210; margin-bottom:6px;">2. L8-REEV BC 财务分析与立项 — 责任人：查志辉、嵇森森</div>
-            <p style="font-size:11.5px; color:#713F12; margin-bottom:8px;"><strong>阻塞卡点：</strong>BC 财务分析未通过（查志辉）；立项指令未完成下发，需补齐地产化财务分析明细（嵇森森）。</p>
+            <span class="matrix-tag">积分规划决策 (High Impact / Medium Urgency)</span>
+            <div style="font-size:12px; font-weight:700; color:#744210; margin-bottom:6px;">2. 3701 计划中 2.0T 发动机方案打合 — 责任人：瞿国峰、Karagin</div>
+            <p style="font-size:11.5px; color:#713F12; margin-bottom:8px;">3701 计划涉及的 2.0T 发动机方案尚待中外双方打合决策，影响后续目标任务下发及积分切换安排。</p>
             <div style="font-size:11px; background:#FFF; padding:10px; border-radius:4px; border:1px solid #F6E05E;">
-              <strong>决策建议：</strong>重新打合财务分析模型，加速补齐明细，确保顺利下发立项指令。
+              决策建议：尽快组织双方确认发动机方案及决策结论，作为 3701 计划下发的前置条件。
+            </div>
+          </div>
+
+          <div class="matrix-card high-mid">
+            <span class="matrix-tag">车型计划与节点确认 (High Impact / Medium Urgency)</span>
+            <div style="font-size:12px; font-weight:700; color:#744210; margin-bottom:6px;">3. LRPP 车型 SOP 时间批准 — 责任人：杨华、Karagin</div>
+            <p style="font-size:11.5px; color:#713F12; margin-bottom:8px;">J7 FL ICE 版型及 L8 REEV 车型的 SOP 时间仍待批准，需尽快明确正式节点。</p>
+            <div style="font-size:11px; background:#FFF; padding:10px; border-radius:4px; border:1px solid #F6E05E;">
+              决策建议：推动相关责任方完成 SOP 时间确认，及时同步 LRPP 计划及项目节点。
+            </div>
+          </div>
+
+          <div class="matrix-card high-mid">
+            <span class="matrix-tag">AGN 项目投资方案 (High Impact / Medium Urgency)</span>
+            <div style="font-size:12px; font-weight:700; color:#744210; margin-bottom:6px;">4. AGN 研发积分投资方案确认 — 责任人：王仲贵</div>
+            <p style="font-size:11.5px; color:#713F12; margin-bottom:8px;">AGN 项目研发积分投资方案尚待确认，需明确投资方案及后续执行依据。</p>
+            <div style="font-size:11px; background:#FFF; padding:10px; border-radius:4px; border:1px solid #F6E05E;">
+              决策建议：组织相关方确认投资方案，并明确结论、责任分工及完成时间。
+            </div>
+          </div>
+
+          <div class="matrix-card high-mid">
+            <span class="matrix-tag">本地化积分切换 (High Impact / Medium Urgency)</span>
+            <div style="font-size:12px; font-weight:700; color:#744210; margin-bottom:6px;">5. 本地化积分切换方案确认 — 责任人：衡志平</div>
+            <p style="font-size:11.5px; color:#713F12; margin-bottom:8px;">当前待切换零件数量较多，但实际仅需满足 300 分，切换方案尚未达成一致。</p>
+            <div style="font-size:11px; background:#FFF; padding:10px; border-radius:4px; border:1px solid #F6E05E;">
+              决策建议：围绕 300 分目标重新核对候选零件及切换节奏，尽快形成一致方案并明确执行清单。
             </div>
           </div>
 
           <div class="matrix-card">
-            <span class="matrix-tag" style="background:var(--navy); color:#FFF;">跨部门协同 (Cross-Functional)</span>
-            <div style="font-size:12px; font-weight:700; color:var(--navy); margin-bottom:6px;">3. 719 法案积分系数影响评估 — 责任人：瞿国峰、王宇敏、曹现康、李境原</div>
-            <p style="font-size:11.5px; color:var(--ink); margin-bottom:6px;">联合采购(瞿国峰)、研发(王宇敏)、本地化(曹现康)与政策团队(李境原)，深度评估法案引入积分系数对成本及成果归零的连锁反应。</p>
+            <span class="matrix-tag" style="background:var(--navy); color:#FFF;">项目签批与指令 (Cross-Functional)</span>
+            <div style="font-size:12px; font-weight:700; color:var(--navy); margin-bottom:6px;">6. AGN 路试跑道临时方案会签及签批 — 责任人：崔亮</div>
+            <p style="font-size:11.5px; color:var(--ink); margin-bottom:6px;">AGN 路试跑道临时方案仍需完成中外方会签及领导签批。</p>
           </div>
 
           <div class="matrix-card">
-            <span class="matrix-tag" style="background:var(--navy); color:#FFF;">运营规划 (Operations)</span>
-            <div style="font-size:12px; font-weight:700; color:var(--navy); margin-bottom:6px;">4. 2567/3701 积分切换与团队分工 — 责任人：曹现康、王小聪、曹宁章</div>
-            <p style="font-size:11.5px; color:var(--ink); margin-bottom:6px;">明确燃油车动总组合换动节奏（王小聪）；下发 2567/3701 本地化通知（曹现康）；完成团队梯队建设与分工（曹宁章）。</p>
+            <span class="matrix-tag" style="background:var(--navy); color:#FFF;">项目指令闭环 (Cross-Functional)</span>
+            <div style="font-size:12px; font-weight:700; color:var(--navy); margin-bottom:6px;">7. AGM L8、T22FL CKD 项目取消指令 — 责任人：汪敏</div>
+            <p style="font-size:11.5px; color:var(--ink); margin-bottom:6px;">AGM L8 和 T22FL CKD 项目取消指令尚待完成，需推动相关流程闭环。</p>
           </div>
         </div>
       </div>
@@ -706,9 +682,10 @@
           </div>
 
           <ul class="bullet-list good">
-            <li><strong>关口与节点达成：</strong>完成新研发积分政策发布；确保 T9 大五座 GISP 在 2026-09-30 前公布；所有车型项目均按期实现 SOP。</li>
-            <li><strong>政策与法规突破：</strong>推动大电容法规修订（争取22项电子器件增分）；完成营销中心产业政策培训；上线 SPIC 义务监管看板；完成 2027 年积分测算及 6 项主要政策趋势预判。</li>
-            <li><strong>规划与立项成果：</strong>锁定 49 款车一级计划（ICE-3701分 / NEV-2567分）；完成 AGN 首批地产化件清单签批；完成 AGN 厂区 5 款车型（V27/ETFL/V25/E02/G700）P1 立项指令及一级计划下发（9月21日）与设备定标。</li>
+            <li><strong>经营汇报与过程管理：</strong>固化 KD 工作数据底座，积分、项目、专项及科室月度工作均建立专门在线表单，实现工作信息从流程化收集到量化跟踪、可视化呈现；本月组织积分会 3 场，跟踪事项 30 余项，关闭 10 项。</li>
+            <li><strong>AGN 项目建设与设备交付：</strong>完成 AGN 项目涂装废旧设备拆除工具发运（10 月 15 日）；完成首批涂装工具发运，共 3 辆卡车；完成设备合同及 CKD 协议签署，并办理首批 66 家涂装供应商邀请函。</li>
+            <li><strong>车型项目推进与工艺协同：</strong>完成 T28FL KD 项目预研；完成 AGM L8 车型工艺方案会签；推进 AGS C4 车型设备调试并完成工艺验证；完成 AGN 项目焊装人员学习接待；完成 AGT-TY 8AT 装配线设备及工艺开发服务合同价格打合并发送外方。</li>
+            <li><strong>政策研究与本地化支持：</strong>开展研发积分政策、紫线政策及未来贴息政策培训解读，结合 2027 年电车积分规划分析潜在影响；完成 FM 市场竞品车型本地化成果对比分析，并持续推进 SPIC4 修订及 AGN 工厂项目支持。</li>
           </ul>
         </div>
 
@@ -718,9 +695,10 @@
           </div>
 
           <ul class="bullet-list next">
-            <li><strong>积分与动总方案锁定：</strong>打合 3701 计划与 1500 分零部件切换；对齐 MJV 3701/2000 分一级计划；明确动总组合及换动节奏。</li>
-            <li><strong>厂区攻坚推进：</strong>AGN 厂区落实切尔尼土建（10/30前落地）、设备发运（11/30）及 V27 KDBOM 挂网；AGM 厂区确认启动指令及 20 JPH 线方案；AGS 厂区推进 C4 项目及 LRPP 调整。</li>
-            <li><strong>项目与政策跟进：</strong>跟踪 L8-REEV 及 T1ED/L6-REEV 材料准备；推进 FM 变速箱、2.0 发动机、电池及冲压项目；深化 719 法案评估、紫线政策跟进及 SPIC 变更筹备。</li>
+            <li><strong>积分目标与切换方案：</strong>推进 2567 分与 1500 分方案落地； 3701 分与 2000 分清单梳理及目标任务下发；跟踪 2026 年底 2567 分切换闭环，并推进 2027 年中旬切换零件问题。</li>
+            <li><strong>AGN 工厂建设与交付：</strong>跟进设备发运，力争月底前完成 95% 以上发运任务并及时整理报关资料；跟进人员邀请函及签证办理、安装调试人员到位、路试跑道临时方案签批，以及调试订单传递和生产发运。</li>
+            <li><strong>合同、质量协议与工厂支持：</strong>完成约 30 份 AGS 合同流程审批及盖章；赴 AGS 工厂学习 DKD/CKD 索赔协议、质量协议签署及地产化积分相关工作；推进 AGT-TY 8AT 装配线设备和工艺开发服务合同签署及其他合同起草。</li>
+            <li><strong>车型项目与政策跟进：</strong>推进 AGM 启动指令及 20 JPH 线方案确认、AGS C4 项目及 LRPP 调整；跟进整车试验与 OTTC 申请；持续跟踪紫线政策发布、SPIC4 提报、本地化件承诺梳理、监管机制确定及各工厂风险识别。</li>
           </ul>
         </div>
       </div>
@@ -729,9 +707,12 @@
 
 </div>
 
+<div id="gapPlanTooltip" role="tooltip" aria-hidden="true"><div class="gap-plan-title"></div><div class="gap-plan-detail"></div></div>
+
 <script>
 /* ==================== 1. 原始数据 (纯净无删减) ==================== */
-const SCORE_DATA = {"rows":[{"factory":"AGK","model":"C5","code":"T19CFL","config":"1.5+6DCT-FWD","date":"2027/01/01","total":2575.0,"rd":429.0,"line":900.0,"parts":1246.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C5","code":"T19CFL","config":"1.5+6DCT-FWD","date":"2027/03/12","total":2767.0,"rd":300.0,"line":900.0,"parts":1567.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C5","code":"T19CFL","config":"1.5+7DCT-AWD","date":"2027/01/01","total":2658.0,"rd":429.0,"line":900.0,"parts":1329.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C5","code":"T19CFL","config":"1.5+7DCT-AWD","date":"2027/03/12","total":2850.0,"rd":300.0,"line":900.0,"parts":1650.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC","config":"1.6+7DCT-AWD","date":"2027/01/01","total":2628.0,"rd":429.0,"line":900.0,"parts":1299.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC","config":"1.6+7DCT-AWD","date":"2027/03/12","total":2570.0,"rd":300.0,"line":900.0,"parts":1370.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC","config":"1.6+7DCT-FWD","date":"2027/01/01","total":2628.0,"rd":429.0,"line":900.0,"parts":1299.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC","config":"1.6+7DCT-FWD","date":"2027/03/12","total":2570.0,"rd":300.0,"line":900.0,"parts":1370.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"L6","code":"T1Q","config":"1.5+6DCT-FWD","date":"2027/01/01","total":2687.0,"rd":429.0,"line":900.0,"parts":1358.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"L6","code":"T1Q","config":"1.5+6DCT-FWD","date":"2027/03/12","total":2636.0,"rd":300.0,"line":900.0,"parts":1436.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"L6","code":"T1Q","config":"1.5+7DCT-AWD","date":"2027/01/01","total":2462.0,"rd":429.0,"line":900.0,"parts":1133.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"L6","code":"T1Q","config":"1.5+7DCT-AWD","date":"2027/03/12","total":2636.0,"rd":300.0,"line":900.0,"parts":1436.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+6DCT-FWD","date":"2027/01/01","total":2580.5,"rd":429.0,"line":900.0,"parts":1251.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+6DCT-FWD","date":"2027/03/12","total":2717.5,"rd":300.0,"line":900.0,"parts":1517.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+7DCT-AWD","date":"2027/01/01","total":2580.5,"rd":429.0,"line":900.0,"parts":1251.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+7DCT-AWD","date":"2027/03/12","total":2727.5,"rd":300.0,"line":900.0,"parts":1527.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+MT-FWD","date":"2027/01/01","total":2580.5,"rd":429.0,"line":900.0,"parts":1251.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+MT-FWD","date":"2027/03/12","total":2717.5,"rd":300.0,"line":900.0,"parts":1517.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-AWD","date":"2027/01/01","total":2599.0,"rd":429.0,"line":900.0,"parts":1270.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-AWD","date":"2027/03/12","total":2849.0,"rd":300.0,"line":900.0,"parts":1649.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-FWD","date":"2027/01/01","total":2729.0,"rd":429.0,"line":900.0,"parts":1400.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-FWD","date":"2027/03/12","total":2969.0,"rd":300.0,"line":900.0,"parts":1769.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"1.6+7DCT-FWD","date":"2027/01/01","total":2901.0,"rd":429.0,"line":900.0,"parts":1572.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"1.6+7DCT-FWD","date":"2027/03/12","total":2976.0,"rd":300.0,"line":900.0,"parts":1776.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"2.0+7DCT-AWD","date":"2027/01/01","total":2506.0,"rd":429.0,"line":900.0,"parts":1177.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"2.0+7DCT-AWD","date":"2027/03/12","total":2751.0,"rd":300.0,"line":900.0,"parts":1551.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-5座","config":"2.0+8AT-AWD","date":"2027/01/01","total":2526.5,"rd":429.0,"line":900.0,"parts":1197.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-7座","config":"2.0+8AT-AWD","date":"2027/01/01","total":2529.0,"rd":429.0,"line":900.0,"parts":1200.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-5座","config":"2.0+8AT-AWD","date":"2027/03/12","total":2433.5,"rd":300.0,"line":900.0,"parts":1233.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-7座","config":"2.0+8AT-AWD","date":"2027/03/12","total":2436.0,"rd":300.0,"line":900.0,"parts":1236.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"1.6+7DCT-FWD","date":"2027/01/01","total":2744.5,"rd":1160.0,"line":900.0,"parts":684.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"1.6+7DCT-FWD","date":"2027/06/09","total":2840.0,"rd":400.0,"line":900.0,"parts":1540.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"1.6+8AT-FWD","date":"2027/06/09","total":2840.0,"rd":400.0,"line":900.0,"parts":1540.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"2.0+8AT-FWD","date":"2027/01/01","total":2624.0,"rd":1160.0,"line":900.0,"parts":564.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"2.0+8AT-FWD","date":"2027/06/09","total":2750.0,"rd":400.0,"line":900.0,"parts":1450.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.5+6DCT-FWD","date":"2027/01/01","total":2717.0,"rd":1160.0,"line":900.0,"parts":657.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.5+6DCT-FWD","date":"2027/06/09","total":2837.0,"rd":400.0,"line":900.0,"parts":1537.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.6+7DCT-AWD","date":"2027/01/01","total":2627.0,"rd":1160.0,"line":900.0,"parts":567.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.6+7DCT-AWD","date":"2027/06/09","total":2836.0,"rd":400.0,"line":900.0,"parts":1536.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY","config":"1.6+7DCT-AWD","date":"2027/01/01","total":2652.0,"rd":1160.0,"line":900.0,"parts":592.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY","config":"1.6+7DCT-AWD","date":"2027/06/09","total":2781.0,"rd":400.0,"line":900.0,"parts":1481.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY","config":"1.6+7DCT-FWD","date":"2027/01/01","total":2732.0,"rd":1160.0,"line":900.0,"parts":672.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY","config":"1.6+7DCT-FWD","date":"2027/06/09","total":2761.0,"rd":400.0,"line":900.0,"parts":1461.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J8","code":"T26","config":"2.0+7DCT-AWD","date":"2027/01/01","total":2617.0,"rd":1160.0,"line":900.0,"parts":557.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J8","code":"T26","config":"2.0+7DCT-AWD","date":"2027/06/09","total":2612.0,"rd":400.0,"line":900.0,"parts":1312.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"MX","code":"M32TFL3","config":"2.0+8AT-AWD","date":"2027/01/01","total":2649.0,"rd":1160.0,"line":900.0,"parts":589.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"MX","code":"M32TFL3","config":"2.0+8AT-AWD","date":"2027/06/09","total":2866.0,"rd":400.0,"line":900.0,"parts":1566.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"L8-R","code":"T1G-R","config":"1.5+DHT-AWD","date":"2027/01/01","total":2295.0,"rd":1160.0,"line":900.0,"parts":235.0,"category":"NEV","target":1500.0},{"factory":"AGM","model":"L8-R","code":"T1G-R","config":"1.5+DHT-AWD","date":"2027/06/09","total":1745.0,"rd":400.0,"line":900.0,"parts":445.0,"category":"NEV","target":1500.0},{"factory":"AGM","model":"L8-R","code":"T1G-R","config":"1.5+DHT-FWD","date":"2027/01/01","total":2295.0,"rd":1160.0,"line":900.0,"parts":235.0,"category":"NEV","target":1500.0},{"factory":"AGM","model":"L8-R","code":"T1G-R","config":"1.5+DHT-FWD","date":"2027/06/09","total":1745.0,"rd":400.0,"line":900.0,"parts":445.0,"category":"NEV","target":1500.0},{"factory":"AGS","model":"C4","code":"T13C","config":"1.5+6DCT-FWD","date":"2027/01/01","total":2603.0,"rd":1000.0,"line":900.0,"parts":703.0,"category":"ICE","target":2567.0},{"factory":"AGS","model":"C4","code":"T13C","config":"1.5+6DCT-FWD","date":"2027/05/01","total":2619.0,"rd":600.0,"line":900.0,"parts":1119.0,"category":"ICE","target":2567.0},{"factory":"AGS","model":"L4","code":"T13T","config":"1.5+6DCT-FWD","date":"2027/01/01","total":2631.0,"rd":1000.0,"line":900.0,"parts":731.0,"category":"ICE","target":2567.0},{"factory":"AGS","model":"L4","code":"T13T","config":"1.5+6DCT-FWD","date":"2027/05/01","total":2614.0,"rd":600.0,"line":900.0,"parts":1114.0,"category":"ICE","target":2567.0},{"factory":"AGS","model":"ET-R","code":"E0Y","config":"1.5+DHT-AWD","date":"2027/01/01","total":1554.0,"rd":1000.0,"line":0.0,"parts":554.0,"category":"NEV","target":1500.0},{"factory":"AGS","model":"ET8-R","code":"E02","config":"1.5+DHT-AWD","date":"2027/01/01","total":1554.0,"rd":1000.0,"line":0.0,"parts":554.0,"category":"NEV","target":1500.0},{"factory":"AGS","model":"V27-R","code":"S5D","config":"1.5+DHT-AWD","date":"2027/01/01","total":1554.0,"rd":1000.0,"line":0.0,"parts":554.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"ET-R","code":"E0Y-FL","config":"1.5+DHT-AWD","date":"2027/04/30","total":2198.0,"rd":750.0,"line":900.0,"parts":548.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"ET8-R","code":"E02","config":"1.5+DHT-AWD","date":"2027/06/30","total":2198.0,"rd":750.0,"line":900.0,"parts":548.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"V25-R","code":"S59D","config":"1.5+DHT-AWD","date":"2027/05/30","total":2198.0,"rd":750.0,"line":900.0,"parts":548.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"V27-R","code":"S5D","config":"1.5+DHT-AWD","date":"2027/03/30","total":2198.0,"rd":750.0,"line":900.0,"parts":548.0,"category":"NEV","target":1500.0}],"factories":["AGK","AGM","AGS","AGN"],"nodes":{"AGK":["2027/01/01","2027/03/12"],"AGM":["2027/01/01","2027/06/09"],"AGS":["2027/01/01","2027/05/01"],"AGN":["2027/03/30","2027/04/30","2027/05/30","2027/06/30"]},"latest":{"AGK":"2027/03/12","AGM":"2027/06/09","AGS":"2027/05/01","AGN":"2027/06/30"}};
+const SCORE_DATA = {"rows":[{"factory":"AGK","model":"C5","code":"T19C-换标","config":"1.5+6DCT-FWD 尊贵型","date":"2027/01/01","total":2480.0,"rd":429.0,"line":900.0,"parts":1151.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C5","code":"T19C-换标","config":"1.5+6DCT-FWD 尊贵型","date":"2027/03/12","total":2799.0,"rd":300.0,"line":900.0,"parts":1599.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C5","code":"T19C-换标","config":"1.5+6DCT-FWD 舒适型","date":"2027/01/01","total":2296.0,"rd":429.0,"line":900.0,"parts":967.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C5","code":"T19C-换标","config":"1.5+6DCT-FWD 舒适型","date":"2027/03/12","total":2615.0,"rd":300.0,"line":900.0,"parts":1415.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C5","code":"T19C-换标","config":"1.5+6DCT-FWD 豪华型","date":"2027/01/01","total":2480.0,"rd":429.0,"line":900.0,"parts":1151.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C5","code":"T19C-换标","config":"1.5+6DCT-FWD 豪华型","date":"2027/03/12","total":2799.0,"rd":300.0,"line":900.0,"parts":1599.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C5","code":"T19C-换标","config":"1.5+7DCT-AWD 尊贵型","date":"2027/01/01","total":2480.0,"rd":429.0,"line":900.0,"parts":1151.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C5","code":"T19C-换标","config":"1.5+7DCT-AWD 尊贵型","date":"2027/03/12","total":2809.0,"rd":300.0,"line":900.0,"parts":1609.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC-换标","config":"1.6+7DCT-AWD 尊贵","date":"2027/01/01","total":2489.0,"rd":429.0,"line":900.0,"parts":1160.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC-换标","config":"1.6+7DCT-AWD 尊贵","date":"2027/03/12","total":2921.0,"rd":300.0,"line":900.0,"parts":1721.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC-换标","config":"1.6+7DCT-AWD 豪华","date":"2027/01/01","total":2489.0,"rd":429.0,"line":900.0,"parts":1160.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC-换标","config":"1.6+7DCT-AWD 豪华","date":"2027/03/12","total":2921.0,"rd":300.0,"line":900.0,"parts":1721.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC-换标","config":"1.6+7DCT-FWD 尊贵","date":"2027/01/01","total":2489.0,"rd":429.0,"line":900.0,"parts":1160.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC-换标","config":"1.6+7DCT-FWD 尊贵","date":"2027/03/12","total":2921.0,"rd":300.0,"line":900.0,"parts":1721.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC-换标","config":"1.6+7DCT-FWD 豪华","date":"2027/01/01","total":2489.0,"rd":429.0,"line":900.0,"parts":1160.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"C7","code":"T1GC-换标","config":"1.6+7DCT-FWD 豪华","date":"2027/03/12","total":2921.0,"rd":300.0,"line":900.0,"parts":1721.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"L6","code":"T1Q","config":"1.5+6DCT-FWD 尊贵","date":"2027/01/01","total":2797.0,"rd":429.0,"line":900.0,"parts":1468.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"L6","code":"T1Q","config":"1.5+6DCT-FWD 尊贵","date":"2027/03/12","total":3142.0,"rd":300.0,"line":900.0,"parts":1942.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"L6","code":"T1Q","config":"1.5+6DCT-FWD 豪华","date":"2027/01/01","total":2797.0,"rd":429.0,"line":900.0,"parts":1468.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"L6","code":"T1Q","config":"1.5+6DCT-FWD 豪华","date":"2027/03/12","total":3142.0,"rd":300.0,"line":900.0,"parts":1942.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"L6","code":"T1Q","config":"1.5+7DCT-AWD 尊贵","date":"2027/01/01","total":2281.0,"rd":429.0,"line":900.0,"parts":952.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"L6","code":"T1Q","config":"1.5+7DCT-AWD 尊贵","date":"2027/03/12","total":2817.0,"rd":300.0,"line":900.0,"parts":1617.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+6DCT-FWD 舒适","date":"2027/01/01","total":2468.0,"rd":429.0,"line":900.0,"parts":1139.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+6DCT-FWD 舒适","date":"2027/03/12","total":2567.5,"rd":300.0,"line":900.0,"parts":1367.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+6DCT-FWD 豪华","date":"2027/01/01","total":2496.0,"rd":429.0,"line":900.0,"parts":1167.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+6DCT-FWD 豪华","date":"2027/03/12","total":2595.5,"rd":300.0,"line":900.0,"parts":1395.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+7DCT-AWD 舒适","date":"2027/01/01","total":2468.0,"rd":429.0,"line":900.0,"parts":1139.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+7DCT-AWD 舒适","date":"2027/03/12","total":2577.5,"rd":300.0,"line":900.0,"parts":1377.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+7DCT-AWD 豪华","date":"2027/01/01","total":2478.0,"rd":429.0,"line":900.0,"parts":1149.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+7DCT-AWD 豪华","date":"2027/03/12","total":2577.5,"rd":300.0,"line":900.0,"parts":1377.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+MT-FWD 舒适","date":"2027/01/01","total":2468.0,"rd":429.0,"line":900.0,"parts":1139.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T4L","code":"T1EFL","config":"1.5+MT-FWD 舒适","date":"2027/03/12","total":2567.5,"rd":300.0,"line":900.0,"parts":1367.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-AWD 奥华黑黑","date":"2027/01/01","total":2727.0,"rd":429.0,"line":900.0,"parts":1398.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-AWD 奥华黑黑","date":"2027/03/12","total":2722.0,"rd":300.0,"line":900.0,"parts":1522.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-AWD 舒适黑黑","date":"2027/01/01","total":2727.0,"rd":429.0,"line":900.0,"parts":1398.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-AWD 舒适黑黑","date":"2027/03/12","total":2722.0,"rd":300.0,"line":900.0,"parts":1522.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-AWD 豪华黑棕","date":"2027/01/01","total":2727.0,"rd":429.0,"line":900.0,"parts":1398.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-AWD 豪华黑棕","date":"2027/03/12","total":2722.0,"rd":300.0,"line":900.0,"parts":1522.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-FWD 舒适黑黑","date":"2027/01/01","total":2591.0,"rd":429.0,"line":900.0,"parts":1262.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-FWD 舒适黑黑","date":"2027/03/12","total":2624.5,"rd":300.0,"line":900.0,"parts":1424.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-FWD 豪华黑棕","date":"2027/01/01","total":2591.0,"rd":429.0,"line":900.0,"parts":1262.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-FWD 豪华黑棕","date":"2027/03/12","total":2624.5,"rd":300.0,"line":900.0,"parts":1424.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-FWD 豪华黑黑","date":"2027/01/01","total":2591.0,"rd":429.0,"line":900.0,"parts":1262.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T7","code":"T1E 24MY","config":"1.6+7DCT-FWD 豪华黑黑","date":"2027/03/12","total":2624.5,"rd":300.0,"line":900.0,"parts":1424.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"1.6+7DCT-FWD 舒适","date":"2027/01/01","total":2648.0,"rd":429.0,"line":900.0,"parts":1319.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"1.6+7DCT-FWD 舒适","date":"2027/03/12","total":2991.5,"rd":300.0,"line":900.0,"parts":1791.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"1.6+7DCT-FWD 豪华","date":"2027/01/01","total":2648.0,"rd":429.0,"line":900.0,"parts":1319.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"1.6+7DCT-FWD 豪华","date":"2027/03/12","total":2991.5,"rd":300.0,"line":900.0,"parts":1791.5,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"2.0+7DCT-AWD 尊贵-6气囊","date":"2027/01/01","total":2253.0,"rd":429.0,"line":900.0,"parts":924.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"2.0+7DCT-AWD 尊贵-6气囊","date":"2027/03/12","total":2749.0,"rd":300.0,"line":900.0,"parts":1549.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"2.0+7DCT-AWD 尊贵-9气囊","date":"2027/01/01","total":2253.0,"rd":429.0,"line":900.0,"parts":924.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"2.0+7DCT-AWD 尊贵-9气囊","date":"2027/03/12","total":2749.0,"rd":300.0,"line":900.0,"parts":1549.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"2.0+7DCT-AWD 豪华","date":"2027/01/01","total":2253.0,"rd":429.0,"line":900.0,"parts":924.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T8","code":"T18FL4","config":"2.0+7DCT-AWD 豪华","date":"2027/03/12","total":2749.0,"rd":300.0,"line":900.0,"parts":1549.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-5座","config":"2.0+8AT-AWD 尊贵黑棕","date":"2027/01/01","total":2272.0,"rd":429.0,"line":900.0,"parts":943.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-5座","config":"2.0+8AT-AWD 尊贵黑棕","date":"2027/03/12","total":2237.0,"rd":300.0,"line":900.0,"parts":1037.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-5座","config":"2.0+8AT-AWD 尊贵黑黑","date":"2027/01/01","total":2272.0,"rd":429.0,"line":900.0,"parts":943.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-5座","config":"2.0+8AT-AWD 尊贵黑黑","date":"2027/03/12","total":2247.0,"rd":300.0,"line":900.0,"parts":1047.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-5座","config":"2.0+8AT-AWD 豪华黑黑","date":"2027/01/01","total":2272.0,"rd":429.0,"line":900.0,"parts":943.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-5座","config":"2.0+8AT-AWD 豪华黑黑","date":"2027/03/12","total":2212.0,"rd":300.0,"line":900.0,"parts":1012.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-7座","config":"2.0+8AT-AWD 尊贵全黑","date":"2027/01/01","total":2265.0,"rd":429.0,"line":900.0,"parts":936.0,"category":"ICE","target":2567.0},{"factory":"AGK","model":"T9","code":"T28-7座","config":"2.0+8AT-AWD 尊贵全黑","date":"2027/03/12","total":2235.0,"rd":300.0,"line":900.0,"parts":1035.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"1.6+7DCT-FWD 豪华","date":"2027/01/01","total":2744.5,"rd":1160.0,"line":900.0,"parts":684.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"1.6+7DCT-FWD 豪华","date":"2027/06/09","total":2670.0,"rd":400.0,"line":900.0,"parts":1370.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"1.6+7DCT-FWD 豪华极致","date":"2027/01/01","total":2744.5,"rd":1160.0,"line":900.0,"parts":684.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"1.6+7DCT-FWD 豪华极致","date":"2027/06/09","total":2670.0,"rd":400.0,"line":900.0,"parts":1370.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"2.0+8AT-FWD 尊贵","date":"2027/01/01","total":2609.5,"rd":1160.0,"line":900.0,"parts":549.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"A8","code":"M1EFL","config":"2.0+8AT-FWD 尊贵","date":"2027/06/09","total":2750.0,"rd":400.0,"line":900.0,"parts":1450.0,"category":"ICE","target":2567.0},{"factory":"AGS","model":"C4","code":"T13C","config":"1.5+6DCT-FWD 尊贵","date":"2027/01/01","total":2603.0,"rd":1000.0,"line":900.0,"parts":703.0,"category":"ICE","target":2567.0},{"factory":"AGS","model":"C4","code":"T13C","config":"1.5+6DCT-FWD 舒适","date":"2027/01/01","total":2603.0,"rd":1000.0,"line":900.0,"parts":703.0,"category":"ICE","target":2567.0},{"factory":"AGS","model":"C4","code":"T13C","config":"1.5+6DCT-FWD 豪华","date":"2027/01/01","total":2603.0,"rd":1000.0,"line":900.0,"parts":703.0,"category":"ICE","target":2567.0},{"factory":"AGS","model":"C4","code":"T13C","config":"1.5+6DCT-FWD 尊贵","date":"2027/05/01","total":2683.5,"rd":600.0,"line":900.0,"parts":1183.5,"category":"ICE","target":2567.0},{"factory":"AGS","model":"C4","code":"T13C","config":"1.5+6DCT-FWD 舒适","date":"2027/05/01","total":2683.5,"rd":600.0,"line":900.0,"parts":1183.5,"category":"ICE","target":2567.0},{"factory":"AGS","model":"C4","code":"T13C","config":"1.5+6DCT-FWD 豪华","date":"2027/05/01","total":2683.5,"rd":600.0,"line":900.0,"parts":1183.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.5+6DCT-FWD 尊贵","date":"2027/01/01","total":2812.5,"rd":1160.0,"line":900.0,"parts":752.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.5+6DCT-FWD 尊贵","date":"2027/06/09","total":2749.0,"rd":400.0,"line":900.0,"parts":1449.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.5+6DCT-FWD 舒适","date":"2027/01/01","total":2812.5,"rd":1160.0,"line":900.0,"parts":752.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.5+6DCT-FWD 舒适","date":"2027/06/09","total":2749.0,"rd":400.0,"line":900.0,"parts":1449.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.5+6DCT-FWD 豪华","date":"2027/01/01","total":2812.5,"rd":1160.0,"line":900.0,"parts":752.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.5+6DCT-FWD 豪华","date":"2027/06/09","total":2749.0,"rd":400.0,"line":900.0,"parts":1449.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.6+7DCT-AWD 尊贵","date":"2027/01/01","total":2605.0,"rd":1160.0,"line":900.0,"parts":545.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.6+7DCT-AWD 尊贵","date":"2027/06/09","total":2648.0,"rd":400.0,"line":900.0,"parts":1348.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.6+7DCT-AWD 豪华","date":"2027/01/01","total":2605.0,"rd":1160.0,"line":900.0,"parts":545.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J6","code":"T13J","config":"1.6+7DCT-AWD 豪华","date":"2027/06/09","total":2623.0,"rd":400.0,"line":900.0,"parts":1323.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY","config":"1.6+7DCT-AWD 高-豪华","date":"2027/01/01","total":2602.5,"rd":1160.0,"line":900.0,"parts":542.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY","config":"1.6+7DCT-AWD 高-豪华","date":"2027/06/09","total":2595.0,"rd":400.0,"line":900.0,"parts":1295.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY（一档）","config":"1.6+7DCT-AWD 高-尊贵","date":"2027/01/01","total":2602.5,"rd":1160.0,"line":900.0,"parts":542.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY（一档）","config":"1.6+7DCT-AWD 高-尊贵","date":"2027/06/09","total":2595.0,"rd":400.0,"line":900.0,"parts":1295.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY（一档）","config":"1.6+7DCT-FWD 尊贵","date":"2027/01/01","total":2682.5,"rd":1160.0,"line":900.0,"parts":622.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY（一档）","config":"1.6+7DCT-FWD 尊贵","date":"2027/06/09","total":2695.0,"rd":400.0,"line":900.0,"parts":1395.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY（一档）","config":"1.6+7DCT-FWD 舒适","date":"2027/01/01","total":2682.5,"rd":1160.0,"line":900.0,"parts":622.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J7","code":"T1EJ MY（一档）","config":"1.6+7DCT-FWD 舒适","date":"2027/06/09","total":2695.0,"rd":400.0,"line":900.0,"parts":1395.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J8","code":"T26-换标","config":"2.0+7DCT-AWD 矢量","date":"2027/01/01","total":2626.5,"rd":1160.0,"line":900.0,"parts":566.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J8","code":"T26-换标","config":"2.0+7DCT-AWD 矢量","date":"2027/06/09","total":2585.0,"rd":400.0,"line":900.0,"parts":1285.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J8","code":"T26-换标","config":"2.0+7DCT-AWD 舒适","date":"2027/01/01","total":2626.5,"rd":1160.0,"line":900.0,"parts":566.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J8","code":"T26-换标","config":"2.0+7DCT-AWD 舒适","date":"2027/06/09","total":2585.0,"rd":400.0,"line":900.0,"parts":1285.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J8","code":"T26-换标","config":"2.0+7DCT-AWD 豪华","date":"2027/01/01","total":2626.5,"rd":1160.0,"line":900.0,"parts":566.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J8","code":"T26-换标","config":"2.0+7DCT-AWD 豪华","date":"2027/06/09","total":2585.0,"rd":400.0,"line":900.0,"parts":1285.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"J8-P","code":"T26-P","config":"1.5+3DHT-AWD 尊贵","date":"2027/06/09","total":1620.0,"rd":400.0,"line":900.0,"parts":320.0,"category":"NEV","target":1500.0},{"factory":"AGS","model":"L4","code":"T13T","config":"1.5+6DCT-FWD 舒适","date":"2027/01/01","total":2631.0,"rd":1000.0,"line":900.0,"parts":731.0,"category":"ICE","target":2567.0},{"factory":"AGS","model":"L4","code":"T13T","config":"1.5+6DCT-FWD 舒适","date":"2027/05/01","total":2711.5,"rd":600.0,"line":900.0,"parts":1211.5,"category":"ICE","target":2567.0},{"factory":"AGS","model":"L4","code":"T13T","config":"1.5+6DCT-FWD 豪华","date":"2027/01/01","total":2631.0,"rd":1000.0,"line":900.0,"parts":731.0,"category":"ICE","target":2567.0},{"factory":"AGS","model":"L4","code":"T13T","config":"1.5+6DCT-FWD 豪华","date":"2027/05/01","total":2711.5,"rd":600.0,"line":900.0,"parts":1211.5,"category":"ICE","target":2567.0},{"factory":"AGM","model":"L8-R","code":"T1G-R","config":"1.5+DHT-FWD 尊贵","date":"2027/06/09","total":1619.0,"rd":400.0,"line":900.0,"parts":319.0,"category":"NEV","target":1500.0},{"factory":"AGM","model":"L8-R","code":"T1G-R","config":"1.5+DHT-FWD 豪华","date":"2027/06/09","total":1619.0,"rd":400.0,"line":900.0,"parts":319.0,"category":"NEV","target":1500.0},{"factory":"AGM","model":"MX","code":"M32TFL3","config":"2.0+8AT-AWD 标准型黑","date":"2027/01/01","total":2629.0,"rd":1160.0,"line":900.0,"parts":569.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"MX","code":"M32TFL3","config":"2.0+8AT-AWD 标准型黑","date":"2027/06/09","total":2666.0,"rd":400.0,"line":900.0,"parts":1366.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"MX","code":"M32TFL3","config":"2.0+8AT-AWD 豪华型棕","date":"2027/01/01","total":2629.0,"rd":1160.0,"line":900.0,"parts":569.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"MX","code":"M32TFL3","config":"2.0+8AT-AWD 豪华型棕","date":"2027/06/09","total":2566.0,"rd":400.0,"line":900.0,"parts":1266.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"MX","code":"M32TFL3","config":"2.0+8AT-AWD 豪华型黑","date":"2027/01/01","total":2629.0,"rd":1160.0,"line":900.0,"parts":569.0,"category":"ICE","target":2567.0},{"factory":"AGM","model":"MX","code":"M32TFL3","config":"2.0+8AT-AWD 豪华型黑","date":"2027/06/09","total":2566.0,"rd":400.0,"line":900.0,"parts":1266.0,"category":"ICE","target":2567.0},{"factory":"AGS","model":"ET-R","code":"E0Y","config":"1.5+DHT-AWD 尊贵全黑","date":"2027/01/01","total":1554.0,"rd":1000.0,"line":0.0,"parts":554.0,"category":"NEV","target":1500.0},{"factory":"AGS","model":"ET-R","code":"E0Y","config":"1.5+DHT-AWD 尊贵治愈棕","date":"2027/01/01","total":1554.0,"rd":1000.0,"line":0.0,"parts":554.0,"category":"NEV","target":1500.0},{"factory":"AGS","model":"ET-R","code":"E0Y","config":"1.5+DHT-AWD 尊贵瓦青灰","date":"2027/01/01","total":1554.0,"rd":1000.0,"line":0.0,"parts":554.0,"category":"NEV","target":1500.0},{"factory":"AGS","model":"ET-R","code":"E0Y","config":"1.5+DHT-AWD 尊贵黑化版","date":"2027/01/01","total":1554.0,"rd":1000.0,"line":0.0,"parts":554.0,"category":"NEV","target":1500.0},{"factory":"AGS","model":"ET8-R","code":"E02","config":"1.5+DHT-AWD 尊贵全黑","date":"2027/01/01","total":1554.0,"rd":1000.0,"line":0.0,"parts":554.0,"category":"NEV","target":1500.0},{"factory":"AGS","model":"ET8-R","code":"E02","config":"1.5+DHT-AWD 尊贵黑米","date":"2027/01/01","total":1554.0,"rd":1000.0,"line":0.0,"parts":554.0,"category":"NEV","target":1500.0},{"factory":"AGS","model":"V27-R","code":"S5D","config":"1.5+DHT-AWD 舒适黑灰","date":"2027/01/01","total":1554.0,"rd":1000.0,"line":0.0,"parts":554.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"ET-R","code":"E0Y-FL","config":"1.5+DHT-AWD 尊贵黑棕","date":"2027/05/30","total":2198.0,"rd":750.0,"line":900.0,"parts":548.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"ET-R","code":"E0Y-FL","config":"1.5+DHT-AWD 尊贵黑灰","date":"2027/04/30","total":2198.0,"rd":750.0,"line":900.0,"parts":548.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"ET-R","code":"E0Y-FL","config":"1.5+DHT-AWD 舒适黑黑","date":"2027/05/30","total":2198.0,"rd":750.0,"line":900.0,"parts":548.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"ET8-R","code":"E02","config":"1.5+DHT-AWD 尊贵黑米","date":"2027/06/30","total":2198.0,"rd":750.0,"line":900.0,"parts":548.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"V25-R","code":"S59D","config":"1.5+DHT-AWD 尊贵黑棕","date":"2027/05/30","total":2198.0,"rd":750.0,"line":900.0,"parts":548.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"V25-R","code":"S59D","config":"1.5+DHT-AWD 尊贵黑黑","date":"2027/05/30","total":2198.0,"rd":750.0,"line":900.0,"parts":548.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"V25-R","code":"S59D","config":"1.5+DHT-AWD 舒适黑黑","date":"2027/06/30","total":2198.0,"rd":750.0,"line":900.0,"parts":548.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"V27-R","code":"S5D","config":"1.5+DHT-AWD 豪华黑棕","date":"2027/03/01","total":2001.0,"rd":750.0,"line":900.0,"parts":351.0,"category":"NEV","target":1500.0},{"factory":"AGN","model":"V27-R","code":"S5D","config":"1.5+DHT-AWD 豪华黑灰","date":"2027/03/01","total":2001.0,"rd":750.0,"line":900.0,"parts":351.0,"category":"NEV","target":1500.0}],"factories":["AGK","AGM","AGS","AGN"],"nodes":{"AGK":["2027/01/01","2027/03/12"],"AGM":["2027/01/01","2027/06/09"],"AGS":["2027/01/01","2027/05/01"],"AGN":["2027/03/01","2027/04/30","2027/05/30","2027/06/30"]},"latest":{"AGK":"2027/03/12","AGM":"2027/06/09","AGS":"2027/05/01","AGN":"2027/06/30"}};
+const GAP_PLAN_DATA = [{"factory":"AGK","model":"T4L","configInclude":"舒适","configExclude":"","title":"T4L 舒适版｜积分缺口应对","detail":"当前缺口：99分\n应对方案合计：预计补分+90分\n重点措施：BCM-开关控制+28分；前副车架+15分；侧玻璃（四门+后风挡）+5分；座椅发泡+5分。"},{"factory":"AGK","model":"T4L","configInclude":"豪华","configExclude":"","title":"T4L 豪华版｜积分缺口应对","detail":"当前缺口：71分\n应对方案合计：预计补分+165分\n重点措施：BCM-开关控制+28分；前副车架+15分；侧玻璃（四门+后风挡）+5分；座椅发泡+5分。"},{"factory":"AGK","model":"T8","configInclude":"AWD","configExclude":"","title":"T8 AWD版｜生产节奏与积分应对","detail":"当前缺口：314分，计划3月达到满分。\n生产安排：结合订单，1月、2月不生产，避免缴纳报废税。"},{"factory":"AGK","model":"T9","configInclude":"尊贵","configExclude":"","title":"T9 尊贵版｜积分缺口应对","detail":"当前缺口：295分，目标为530尊贵版型满分。\n补分措施：被动安全、GLONASS等零件抢节点开发，预计补分220分，推动获取满分。\n销售保障：3月10日前建储约1000台，满足销售需求。"},{"factory":"AGK","model":"T9","configInclude":"豪华","configExclude":"","title":"T9 豪华版｜积分缺口应对","detail":"当前缺口：158分，主要受无ADAS配置限制。\n补分措施：被动安全、GLONASS等零件抢节点开发，预计补分220分，推动获取满分。\n销售保障：3月10日前建储约1000台，满足销售需求。"},{"factory":"AGK","model":"C5","configInclude":"豪华","configExclude":"","title":"C5 豪华版｜积分缺口应对","detail":"当前缺口：271分。\n应对方案合计：预计补分+90分。"},{"factory":"AGK","model":"C5","configInclude":"","configExclude":"豪华","title":"C5 其他版型｜积分缺口应对","detail":"当前缺口：87分。\n应对方案合计：预计补分+90分。\n生产安排：舒适版1月、2月不生产。\n补分措施：GLONASS+22分；BDM-开关控制+28分；被动安全+40分。"},{"factory":"AGK","model":"C7","configInclude":"","configExclude":"","title":"C7｜积分缺口应对","detail":"当前缺口：78分。\n应对方案合计：预计补分+303分。\n重点措施：发动机申请1.5系数，预计增加+130分。"},{"factory":"AGK","model":"L6","configInclude":"AWD","configExclude":"","title":"L6 AWD版｜积分缺口应对","detail":"当前缺口：286分。\n生产安排：1月、2月不生产。\n开发抢节点：争取2月底前完成被动安全+265分、中涂+10分、BDM-开关控制+28分。"}];
 
 const PROJ_DATA = {
   "milestones": [
@@ -743,22 +724,21 @@ const PROJ_DATA = {
     {"label": "KD-OKTB", "progress": 100.0}
   ],
   "projects": [
-    {"project": "AGN-V27", "factory": "AGN", "progress": 27.0, "status": "进行中", "sop": "2027/03/30"},
-    {"project": "AGN-E0YFL", "factory": "AGN", "progress": 27.0, "status": "进行中", "sop": "2027/04/30"},
-    {"project": "AGN-V25", "factory": "AGN", "progress": 27.0, "status": "进行中", "sop": "2027/05/30"},
-    {"project": "AGN-E02", "factory": "AGN", "progress": 27.0, "status": "进行中", "sop": "2027/06/30"},
-    {"project": "AGN-G700", "factory": "AGN", "progress": 27.0, "status": "进行中", "sop": "2027/07/30"},
+    {"project": "AGN-V27", "factory": "AGN", "progress": 29.0, "status": "进行中", "sop": "2027/03/30"},
+    {"project": "AGN-E0YFL", "factory": "AGN", "progress": 29.0, "status": "进行中", "sop": "2027/04/30"},
+    {"project": "AGN-V25", "factory": "AGN", "progress": 29.0, "status": "进行中", "sop": "2027/05/30"},
+    {"project": "AGN-E02", "factory": "AGN", "progress": 29.0, "status": "进行中", "sop": "2027/06/30"},
+    {"project": "AGN-G700", "factory": "AGN", "progress": 29.0, "status": "进行中", "sop": "2027/07/30"},
     {"project": "AGS-L4", "factory": "AGS", "progress": 98.5, "status": "进行中", "sop": "2026/08/20"},
     {"project": "AGS-C4", "factory": "AGS", "progress": 76.5, "status": "进行中", "sop": "2026/10/20"},
     {"project": "AGS-QQ3", "factory": "AGS", "progress": 5.0, "status": "进行中", "sop": "TBD"},
     {"project": "AGM-L8 REEV", "factory": "AGM", "progress": 24.5, "status": "进行中", "sop": "2027/01/30"},
-    {"project": "AGM-J8 PHEV", "factory": "AGM", "progress": 24.0, "status": "进行中", "sop": "2027/02/28"},
     {"project": "AGM-T1EJFL", "factory": "AGM", "progress": 21.0, "status": "进行中", "sop": "2027/05/30"},
     {"project": "AGK-T1Q REEV", "factory": "AGK", "progress": 7.5, "status": "进行中", "sop": "2027/03/30"},
     {"project": "AGK-T28FL", "factory": "AGK", "progress": 24.0, "status": "进行中", "sop": "2027/06/30"},
     {"project": "AGK-T1ED", "factory": "AGK", "progress": 28.0, "status": "进行中", "sop": "2027/10/30"},
     {"project": "AGM-A8", "factory": "AGM", "progress": 100.0, "status": "完成", "sop": "2026/06/30"},
-    {"project": "AGM-MX", "factory": "AGM", "progress": 97.0, "status": "风险", "sop": "2026/05/15"},
+    {"project": "AGM-MX", "factory": "AGM", "progress": 100.0, "status": "完成", "sop": "2026/05/15"},
     {"project": "AGK-T4L", "factory": "AGK", "progress": 100.0, "status": "完成", "sop": "2026/04/22"},
     {"project": "AGK-L6", "factory": "AGK", "progress": 98.5, "status": "进行中", "sop": "2026/08/20"},
     {"project": "AGS-E0Y DKD", "factory": "AGS", "progress": 98.5, "status": "进行中", "sop": "2026/05/20"},
@@ -769,13 +749,16 @@ const PROJ_DATA = {
 };
 
 const SPECIAL_DATA = [
-  {"name": "发动机1.5", "progress": 81.0, "sop": "已立项推进中"},
-  {"name": "发动机1.6", "progress": 92.0, "sop": "商品化评审中"},
-  {"name": "发动机2.0", "progress": 32.5, "sop": "立项及开发阶段"},
-  {"name": "变速箱8AT", "progress": 24.0, "sop": "立项过关"},
-  {"name": "变速箱DCT", "progress": 24.0, "sop": "立项过关"},
-  {"name": "动力电池", "progress": 0.0, "sop": "预研准备中"},
-  {"name": "冲压项目", "progress": 0.0, "sop": "预研准备中"}
+  {"name": "发动机1.5", "progress": 66.5, "sop": "2026/10/20"},
+  {"name": "发动机1.6", "progress": 77.0, "sop": "2026/08/05"},
+  {"name": "发动机2.0", "progress": 29.5, "sop": "2027/12/30"},
+  {"name": "变速箱8AT", "progress": 33.0, "sop": "2027/09/30"},
+  {"name": "变速箱DCT", "progress": 23.0, "sop": "2027/09/30"},
+  {"name": "动力电池", "progress": 0.0, "sop": "TBD"},
+  {"name": "冲压30%-T4L", "progress": 40.5, "sop": "2027/03/10"},
+  {"name": "冲压30%-T7", "progress": 40.5, "sop": "2027/03/10"},
+  {"name": "冲压30%-T8", "progress": 40.5, "sop": "2027/03/10"},
+  {"name": "冲压30%-J7", "progress": 6.0, "sop": "2027/12/30"}
 ];
 
 /* ==================== 2. 全局状态与 Tab 切换函数 ==================== */
@@ -898,6 +881,64 @@ function setScoreFactory(f) {
   scoreCrossfade(() => renderScore());
 }
 
+function findGapPlan(r) {
+  if (!r || r.factory !== 'AGK' || !(Number(r.total) < Number(r.target))) return -1;
+  const config = String(r.config || '').toLowerCase();
+  const matches = (GAP_PLAN_DATA || []).map((p, index) => ({p, index}))
+    .filter(({p}) => p.factory === r.factory && p.model === r.model)
+    .filter(({p}) => !p.configInclude || config.includes(String(p.configInclude).toLowerCase()))
+    .filter(({p}) => !p.configExclude || !config.includes(String(p.configExclude).toLowerCase()));
+  if (!matches.length) return -1;
+  // 配置包含关键词越长，规则越具体；具体规则优先于车型通用规则。
+  matches.sort((a, b) => String(b.p.configInclude || '').length - String(a.p.configInclude || '').length);
+  return matches[0].index;
+}
+
+function positionGapTooltip(evt) {
+  const tip = document.getElementById('gapPlanTooltip');
+  if (!tip || tip.style.display === 'none') return;
+  const pad = 12, offset = 18;
+  const rect = tip.getBoundingClientRect();
+  let x = evt.clientX + offset;
+  let y = evt.clientY + offset;
+  if (x + rect.width > window.innerWidth - pad) x = evt.clientX - rect.width - offset;
+  if (y + rect.height > window.innerHeight - pad) y = evt.clientY - rect.height - offset;
+  x = Math.max(pad, Math.min(x, window.innerWidth - rect.width - pad));
+  y = Math.max(pad, Math.min(y, window.innerHeight - rect.height - pad));
+  tip.style.left = x + 'px';
+  tip.style.top = y + 'px';
+}
+
+function showGapTooltip(evt, row) {
+  const idx = Number(row?.dataset?.gapPlanIndex);
+  if (!Number.isInteger(idx) || idx < 0 || !GAP_PLAN_DATA[idx]) return;
+  const tip = document.getElementById('gapPlanTooltip');
+  const plan = GAP_PLAN_DATA[idx];
+  tip.querySelector('.gap-plan-title').textContent = plan.title;
+  tip.querySelector('.gap-plan-detail').textContent = plan.detail;
+  tip.style.display = 'block';
+  tip.setAttribute('aria-hidden', 'false');
+  positionGapTooltip(evt);
+}
+
+function hideGapTooltip() {
+  const tip = document.getElementById('gapPlanTooltip');
+  if (!tip) return;
+  tip.style.display = 'none';
+  tip.setAttribute('aria-hidden', 'true');
+}
+
+// 事件委托：筛选/排序重绘后仍有效；卡片随鼠标移动，并在视口边缘自动翻转。
+document.addEventListener('mousemove', evt => {
+  const row = evt.target.closest?.('#scoreRows .score-row[data-gap-plan-index]');
+  if (row) showGapTooltip(evt, row);
+  else if (!evt.target.closest?.('#gapPlanTooltip')) hideGapTooltip();
+});
+document.addEventListener('mouseleave', hideGapTooltip);
+window.addEventListener('scroll', hideGapTooltip, true);
+window.addEventListener('blur', hideGapTooltip);
+
+
 function renderScore(animate) {
   const isAnim = animate !== false;
   document.querySelectorAll('#scoreFactoryGroup button').forEach(b => {
@@ -976,11 +1017,26 @@ function renderScore(animate) {
     return;
   }
 
+  // 目标线按当前筛选结果动态绘制：单一类别显示一条；ICE/NEV 混合时显示两条并标注目标值。
+  const targetTypes = [...new Map(data.map(r => [Number(r.target), { target: Number(r.target), category: String(r.category || '').toUpperCase() }])).values()]
+    .sort((a, b) => a.target - b.target);
+  // 目标标签放在独立刻度栏上方；竖线只覆盖数据行，不侵入车型、配置及差额列。
+  const targetAxisLabels = targetTypes.map(t => {
+    const pct = Math.max(0, Math.min(1, t.target / maxVal));
+    const label = `${t.category.includes('NEV') ? 'NEV' : 'ICE'} ${t.target}`;
+    return `<span class="score-targetline-label" style="left:${pct * 100}%;">${label}</span>`;
+  }).join('');
+  scale.innerHTML += targetAxisLabels;
+  const targetLinesHtml = targetTypes.map(t => {
+    const pct = Math.max(0, Math.min(1, t.target / maxVal));
+    const left = `calc(400px + (100% - 560px) * ${pct})`;
+    return `<div class="score-targetline" style="left:${left};"></div>`;
+  }).join('');
+
   rowsBox.innerHTML = data.map((r, i) => {
     const gap = r.total - r.target;
     const gapClass = gap >= 0 ? 'color:var(--green);font-weight:700;' : 'color:var(--bad);font-weight:700;';
     const missClass = gap < 0 ? ' miss' : '';
-    const targetPct = (r.target / maxVal * 100).toFixed(1);
     const totalPct = (r.total / maxVal * 100).toFixed(1);
     const rowDelay = (0.18 + i * 0.03).toFixed(2);
 
@@ -996,25 +1052,26 @@ function renderScore(animate) {
       }
     }
 
+    const gapPlanIndex = findGapPlan(r);
+    const planAttr = gapPlanIndex >= 0 ? ` data-gap-plan-index="${gapPlanIndex}"` : '';
     return `
-      <div class="score-row${missClass}" style="animation-delay:${rowDelay}s;">
+      <div class="score-row${missClass}"${planAttr} style="animation-delay:${rowDelay}s;">
         <div style="padding:6px 12px; font-size:11.5px;"><b>${r.model}</b> <span style="font-size:9.5px;color:#888;">(${r.category})</span></div>
         <div style="padding:6px 12px; font-size:10.5px; color:#475569;">${r.config}</div>
         <div style="position:relative; height:100%; display:flex; align-items:center;">
           <div class="score-plot" style="width:100%;">
-            <div class="score-targetline" style="left:${targetPct}%;"></div>
             <div class="score-bar" style="--bar-w:${totalPct}%; animation-delay:${rowDelay}s;">
               <div class="score-segm rd" style="width:${(r.rd/r.total*100).toFixed(1)}%;">${r.rd}</div>
               <div class="score-segm line" style="width:${(r.line/r.total*100).toFixed(1)}%;">${r.line}</div>
               <div class="score-segm parts" style="width:${(r.parts/r.total*100).toFixed(1)}%;">${r.parts}</div>
             </div>
-            <span style="position:absolute; left:calc(${totalPct}% + 6px); top:2px; font-size:10px; font-weight:700;">${r.total}</span>
+            <span class="score-total-label outside" style="left:${totalPct}%;">${r.total}</span>
           </div>
         </div>
         <div style="padding:6px 8px; font-size:10.5px; ${gapClass}">${gap >= 0 ? '+' + gap : gap}${cmpHtml}</div>
       </div>
     `;
-  }).join('');
+  }).join('') + targetLinesHtml;
 }
 
 /* ==================== 4. 项目进展渲染逻辑（彻底消除OKTB重叠） ==================== */
@@ -1036,20 +1093,6 @@ function renderProj() {
   const kdp52 = list.filter(p => p.progress >= 65).length;
   const kdp8 = list.filter(p => p.progress >= 85).length;
   const risk = list.filter(p => p.status === "风险").length;
-
-  // 风险汇总条：仅当前筛选范围存在风险项时显示
-  const banner = document.getElementById('projRiskBanner');
-  const riskProjs = list.filter(p => p.status === "风险");
-  if (riskProjs.length) {
-    banner.style.display = 'flex';
-    banner.innerHTML = `<b>风险预警 (${riskProjs.length})</b><span class="risk-list">${riskProjs.map(p => {
-      const modelName = p.project.replace(/^[^-]+-/, '');
-      return `<span class="risk-tag" onclick="highlightRiskRow('${modelName}')">${p.factory}·${modelName} ${p.progress}%</span>`;
-    }).join('')}</span>`;
-  } else {
-    banner.style.display = 'none';
-    banner.innerHTML = '';
-  }
 
   document.getElementById('projSummary').innerHTML = `
     <div class="metric-card"><div class="k">项目总数</div><div class="v">${total}</div><div class="s">包含四大厂区重点车型</div></div>
@@ -1127,20 +1170,6 @@ function renderSpecial() {
     </div>
   `;
   }).join('');
-}
-
-/* 风险标签点击：定位并高亮对应项目行 */
-function highlightRiskRow(modelName) {
-  const rows = document.querySelectorAll('#projRows .gantt-row');
-  rows.forEach(row => {
-    const title = row.querySelector('div[title]')?.getAttribute('title') || '';
-    if (title === modelName) {
-      row.style.outline = '2px solid var(--bad)';
-      row.style.background = '#FCEAE8';
-      row.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      setTimeout(() => { row.style.outline = ''; row.style.background = ''; }, 2600);
-    }
-  });
 }
 
 /* 初始化运行 */
