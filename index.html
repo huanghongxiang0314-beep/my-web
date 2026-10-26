@@ -9,7 +9,7 @@
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  /* 使用本机系统字体，避免首屏等待远程字体服务 */
 
   /* 咨询报告风细滚动条 */
   ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -763,7 +763,10 @@ const SPECIAL_DATA = [
 
 /* ==================== 2. 全局状态与 Tab 切换函数 ==================== */
 let currentScoreFactory = "AGK";
-let currentScoreNode = SCORE_DATA.latest["AGK"];
+const DEFAULT_SCORE_NODE = "2027/01/01";
+let currentScoreNode = (SCORE_DATA.nodes["AGK"] || []).includes(DEFAULT_SCORE_NODE)
+  ? DEFAULT_SCORE_NODE
+  : SCORE_DATA.latest["AGK"];
 let currentProjFactory = "ALL";
 let currentGapFilter = "all";
 let scoreSortOn = false;
@@ -1172,20 +1175,45 @@ function renderSpecial() {
   }).join('');
 }
 
-/* 初始化运行 */
-window.onload = function() {
-  restoreState();
-  // 同步排序/对比开关的初始显示状态
+/* 初始化运行：首屏优先，其他页面延后；每次打开固定显示 AGK / 2027-01-01 */
+function initializeDashboard() {
+  // 不恢复上次浏览状态，确保所有访问者打开时都从指定首屏进入。
+  currentScoreFactory = "AGK";
+  currentScoreNode = (SCORE_DATA.nodes["AGK"] || []).includes(DEFAULT_SCORE_NODE)
+    ? DEFAULT_SCORE_NODE
+    : SCORE_DATA.latest["AGK"];
+  currentGapFilter = 'all';
+  scoreSortOn = false;
+  compareOn = false;
+  currentProjFactory = 'ALL';
+
   const sortBtn = document.getElementById('scoreSortBtn');
   if (sortBtn) {
-    sortBtn.classList.toggle('active', scoreSortOn);
-    sortBtn.textContent = scoreSortOn ? '差额排序 ↑' : '差额排序';
+    sortBtn.classList.remove('active');
+    sortBtn.textContent = '差额排序';
   }
-  document.getElementById('cmpToggleBtn')?.classList.toggle('active', compareOn);
-  renderScore();
-  renderProj();
-  renderSpecial();
-};
+  document.getElementById('cmpToggleBtn')?.classList.remove('active');
+
+  // 首先同步渲染积分页，并禁用首屏行/柱动画，避免用户等待逐行动画。
+  renderScore(false);
+
+  // 非首屏图表延后到浏览器空闲时渲染，避免和积分首屏争抢主线程。
+  const renderSecondaryTabs = () => {
+    renderProj();
+    renderSpecial();
+  };
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(renderSecondaryTabs, { timeout: 1200 });
+  } else {
+    setTimeout(renderSecondaryTabs, 80);
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeDashboard, { once: true });
+} else {
+  initializeDashboard();
+}
 </script>
 
 </body>
